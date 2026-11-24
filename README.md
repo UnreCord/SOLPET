@@ -71,7 +71,8 @@ imprimir el QR, los impresos dejan de funcionar: conviene definirla antes de imp
     urbanización está cortada y la avenida es larga; falta el nombre completo de la urbanización.
   - Peluditos Pet Shop, "Av. Central 993, Lima": OpenStreetMap no encuentra una Av. Central en el Cercado de Lima; falta confirmar el distrito.
 - **Pin aproximado** (marcados `'calle'` en `tiendas.js`): OpenStreetMap no tiene esos números de puerta y el pin se
-  calculó sobre el trazo de la calle (100 números ≈ una cuadra), así que puede quedar a una o dos cuadras: The Urban Pets,
-  American Vet (San Borja), Lumpet, Peluditos (Pueblo Libre), Naricitas (×2), Pals & Tails, T&M (Magdalena y La Victoria)
-  y Veterinaria Engreídos. Para corregir uno, copiar las coordenadas del local en Google Maps (clic derecho sobre el
-  local) y pegarlas en su fila.
+  calculó sobre el trazo de la calle (100 números ≈ una cuadra), así que puede quedar a una o dos cuadras y la distancia
+  en auto puede diferir más de la de Google Maps: Pals & Tails, T&M (Magdalena y La Victoria) y Veterinaria Engreídos.
+  Para corregir uno, copiar las coordenadas del local en Google Maps (clic derecho sobre el local), pegarlas en su fila
+  y cambiar `'calle'` por `'google'`. Ya corregidos con Google Maps: Lumpet, The Urban Pets, American Vet (San Borja),
+  Peluditos (Pueblo Libre) y Naricitas (×2).
