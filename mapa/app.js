@@ -28,8 +28,9 @@
     if (wide.matches) {
       p = { top: 50, bottom: 50, left: sheet.getBoundingClientRect().right + 50, right: 70 };
     } else {
-      const top = bar.getBoundingClientRect().bottom + 24;
-      const bottom = listOpen ? 40 : h - deck.getBoundingClientRect().top + 24;
+      // medidas sin la animación: al cerrar la lista las tarjetas todavía están entrando desde abajo
+      const top = bar.offsetTop + bar.offsetHeight + 20;
+      const bottom = listOpen ? 40 : deckBox.offsetHeight + 16; // tarjetas y botón "Ver lista"
       p = { top, bottom, left: 30, right: 30 };
     }
     const fit = (a, b, total) => {
@@ -107,7 +108,7 @@
       local ? S.plural(local, 'local más', 'locales más') : '',
       online ? S.plural(online, 'tienda online', 'tiendas online') : ''
     ].filter(Boolean).join(' y ')));
-    li.appendChild(S.el('span', '', rest.map(s => s.name).join(', ') + '.'));
+    li.appendChild(S.el('span', '', 'Están en la lista, sin pin en el mapa.'));
     const btn = S.el('button', 'btn', 'Ver en la lista');
     btn.type = 'button';
     btn.addEventListener('click', () => setList(true));
