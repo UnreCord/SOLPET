@@ -30,7 +30,8 @@
   const kmText = km => (km < 1 ? `${Math.round(km * 100) * 10} m` : `${decimal(Math.round(km * 10) / 10)} km`);
   // con ruta: distancia por las calles en auto; sin ruta (el servicio no respondió): distancia en línea recta.
   // No se muestra el tiempo: el servicio de rutas no considera el tráfico y en Lima lo subestimaría.
-  const distanceText = s => (s.min !== undefined ? `${kmText(s.km)} en auto` : `${kmText(s.km)} en línea recta`);
+  // Es aproximada: el mapa de calles y la ubicación de cada local pueden diferir un poco de los de Google Maps.
+  const distanceText = s => (s.min !== undefined ? `aprox. ${kmText(s.km)} en auto` : `${kmText(s.km)} en línea recta`);
 
   // tiendas que coinciden con la búsqueda; con un punto de partida, de la más cercana a la más lejana
   // (por la ruta en auto si se pudo calcular: routes = { id: { km, min } })
