@@ -1,4 +1,4 @@
-// Mapa de puntos de venta Solpet: piezas comunes a las dos propuestas
+// Mapa de puntos de venta Solpet: piezas base
 // (filtro, lista agrupada por distrito, mapa base con los colores de Solpet y pines).
 (function () {
   const VERDE = '#007A33';
@@ -288,7 +288,7 @@
 
     map.on('load', async () => {
       brandMap(map);
-      const [pin, pinOn] = await Promise.all([loadImage('../assets/pin.png'), loadImage('../assets/pin-activo.png')]);
+      const [pin, pinOn] = await Promise.all([loadImage('assets/pin.png'), loadImage('assets/pin-activo.png')]);
       map.addImage('solpet-pin', pin, { pixelRatio: 2 });
       map.addImage('solpet-pin-on', pinOn, { pixelRatio: 2 });
       map.addSource('stores', { type: 'geojson', data: pending, cluster: true, clusterRadius: 38, clusterMaxZoom: 13 });

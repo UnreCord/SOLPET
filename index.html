@@ -3,45 +3,68 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Solpet | Mapa de puntos de venta</title>
-  <meta name="robots" content="noindex">
+  <title>Solpet | Puntos de venta</title>
+  <meta name="description" content="Encuentra las tiendas y veterinarias de Lima donde están los productos de Solpet.">
   <meta name="theme-color" content="#007A33">
   <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <meta property="og:title" content="Solpet | Puntos de venta">
+  <meta property="og:description" content="Encuentra las tiendas y veterinarias de Lima donde están los productos de Solpet.">
+  <meta property="og:image" content="assets/icono-512.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://tiles.openfreemap.org" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="comun/base.css">
-  <style>
-    body { min-height: 100svh; display: grid; place-items: center; padding: 24px 16px calc(24px + var(--safe-b)); background: var(--verde); }
-    .pick { width: min(720px, 100%); background: var(--blanco); border-radius: 24px; padding: clamp(22px, 5vw, 40px); box-shadow: 0 24px 60px rgba(0, 0, 0, .18); }
-    .pick > img { height: 40px; width: auto; }
-    h1 { margin-top: 22px; font-weight: 800; font-variation-settings: "wdth" 80; font-size: clamp(1.9rem, 6vw, 2.6rem); line-height: 1; letter-spacing: -.03em; color: var(--verde); }
-    .pick > p { margin-top: 10px; }
-    .opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-top: 24px; }
-    .opt { display: grid; gap: 6px; padding: 18px; border-radius: 18px; background: var(--bruma); text-decoration: none; border: 2px solid transparent; transition: border-color .2s; }
-    .opt:hover { border-color: var(--amarillo); }
-    .opt b { color: var(--verde-900); font-size: 1.15rem; }
-    .opt span { font-size: .9rem; }
-    .opt em { font-style: normal; font-weight: 700; color: var(--verde); text-decoration: underline; text-decoration-color: var(--amarillo); text-decoration-thickness: 2px; text-underline-offset: 4px; }
-  </style>
+  <link rel="stylesheet" href="assets/vendor/maplibre/maplibre-gl.css">
+  <link rel="stylesheet" href="mapa/base.css">
+  <link rel="stylesheet" href="mapa/estilos.css">
+  <script src="assets/vendor/maplibre/maplibre-gl.js" defer></script>
+  <script src="mapa/tiendas.js" defer></script>
+  <script src="mapa/mapa.js" defer></script>
+  <script src="mapa/app.js" defer></script>
 </head>
 <body>
-  <main class="pick">
-    <img src="assets/solpet-logo.webp" alt="Solpet" width="640" height="208">
-    <h1>Mapa de puntos de venta</h1>
-    <p>Dos propuestas con el mismo diseño. Ábrelas en el celular para ver cómo se comportan.</p>
-    <div class="opts">
-      <a class="opt" href="propuesta-1/">
-        <b>Propuesta 1 · Mapa + lista</b>
-        <span>El diseño original: en celular el mapa arriba y la lista de tiendas sube como una hoja; en laptop, la tarjeta flota sobre el mapa.</span>
-        <em>Abrir propuesta 1</em>
-      </a>
-      <a class="opt" href="propuesta-2/">
-        <b>Propuesta 2 · Mapa completo</b>
-        <span>El mapa ocupa toda la pantalla y las tiendas se recorren deslizando tarjetas; "Ver lista" muestra todas por distrito.</span>
-        <em>Abrir propuesta 2</em>
-      </a>
+  <h1 class="sr-only">Solpet: puntos de venta en Lima</h1>
+  <div class="map" id="map" role="region" aria-label="Mapa de puntos de venta en Lima"></div>
+
+  <!-- barra superior: logo, buscador y "cerca de mí" -->
+  <header class="bar">
+    <div class="bar__row">
+      <img class="bar__logo" src="assets/solpet-logo.webp" alt="Solpet" width="640" height="208">
+      <label class="search">
+        <span class="sr-only">Buscar por distrito, tienda o calle</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg>
+        <input id="store-q" type="search" placeholder="Distrito, tienda o calle" autocomplete="off" enterkeyhint="search">
+      </label>
+      <button class="btn btn--verde bar__near" id="near-me" type="button" aria-label="Ver los puntos de venta más cercanos a mí">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3 3 10.5l7.5 3 3 7.5z"/></svg>
+        <span>Cerca de mí</span>
+      </button>
     </div>
-  </main>
+    <p class="bar__count" id="store-count" aria-live="polite"></p>
+  </header>
+
+  <!-- tarjetas que se deslizan; cada una corresponde a un pin -->
+  <section class="deck" aria-label="Puntos de venta">
+    <button class="btn deck__list-btn" id="open-list" type="button" aria-expanded="false" aria-controls="sheet">
+      <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="3.5" cy="6" r="1.2" fill="currentColor"/><circle cx="3.5" cy="12" r="1.2" fill="currentColor"/><circle cx="3.5" cy="18" r="1.2" fill="currentColor"/></svg>
+      <span>Ver lista</span>
+    </button>
+    <button class="deck__nav deck__nav--prev" type="button" data-dir="-1" aria-label="Tienda anterior"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5-7 7 7 7"/></svg></button>
+    <ul class="deck__track" id="deck"></ul>
+    <button class="deck__nav deck__nav--next" type="button" data-dir="1" aria-label="Tienda siguiente"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></button>
+  </section>
+
+  <!-- lista completa por distrito -->
+  <aside class="sheet" id="sheet" aria-labelledby="t-lista" inert>
+    <div class="sheet__head">
+      <span class="sheet__grip" aria-hidden="true"></span>
+      <h2 class="sheet__title" id="t-lista">Encuéntranos en</h2>
+      <button class="sheet__close" id="close-list" type="button" aria-label="Cerrar la lista y volver al mapa">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <div class="sheet__list" id="store-list"></div>
+  </aside>
 </body>
 </html>
