@@ -3,7 +3,9 @@
   const S = window.Solpet;
   const STORES = window.SOLPET_TIENDAS;
   const $ = s => document.querySelector(s);
-  const wide = matchMedia('(min-width: 900px)');
+  // PC: panel fijo a la izquierda con la lista (como "Dónde comprar" de la web de referencia);
+  // celular: mapa completo, tarjetas deslizables y "Ver lista". Misma condición que en estilos.css.
+  const wide = matchMedia('(min-width: 900px) and (min-height: 560px)');
 
   const bar = $('.bar');
   const deck = $('#deck');
@@ -16,31 +18,65 @@
   const openBtn = $('#open-list');
   const closeBtn = $('#close-list');
   const [prevBtn, nextBtn] = document.querySelectorAll('.deck__nav');
-  let selectedId = null, userPos = null, listOpen = false;
+  let selectedId = null, userPos = null, listOpen = false, popup = null;
 
-  // espacio libre del mapa: entre la barra de arriba y las tarjetas (o al lado de la lista abierta)
+  // espacio libre del mapa: lo que no tapan el panel (PC) o la barra y las tarjetas (celular).
+  // Nunca deja menos de 180 px libres, para que el mapa siempre pueda encuadrar las tiendas.
   function padding() {
-    const h = window.innerHeight;
-    const topPad = bar.getBoundingClientRect().bottom + 24;
-    let bottom = 40, left = 30;
-    if (listOpen && wide.matches) left = sheet.getBoundingClientRect().right + 30;
-    if (!(listOpen && !wide.matches)) bottom = h - deck.getBoundingClientRect().top + 24;
-    return { top: Math.min(topPad, h * 0.45), bottom: Math.min(bottom, h * 0.45), left, right: 30 };
+    const w = window.innerWidth, h = window.innerHeight;
+    let p;
+    if (wide.matches) {
+      p = { top: 50, bottom: 50, left: sheet.getBoundingClientRect().right + 50, right: 70 };
+    } else {
+      // medidas sin la animación: al cerrar la lista las tarjetas todavía están entrando desde abajo
+      const top = bar.offsetTop + bar.offsetHeight + 20;
+      const bottom = listOpen ? 40 : deckBox.offsetHeight + 16; // tarjetas y botón "Ver lista"
+      p = { top, bottom, left: 30, right: 30 };
+    }
+    const fit = (a, b, total) => {
+      const over = a + b + 180 - total;
+      return over > 0 ? [Math.max(10, a - over / 2), Math.max(10, b - over / 2)] : [a, b];
+    };
+    [p.top, p.bottom] = fit(p.top, p.bottom, h);
+    [p.left, p.right] = fit(p.left, p.right, w);
+    return p;
   }
 
   const view = S.createMap({
     container: 'map',
     stores: STORES,
     padding,
-    controlsPosition: 'top-right',
     controls: false,
-    onPin: id => select(id, { scrollCard: true }),
+    onPin: id => select(id, { scrollCard: true, fromMap: true }),
     onReady: () => {
-      view.fit(current(), false);
+      autoFit();
       if (selectedId !== null) select(selectedId, { fly: true, scrollCard: true });
     }
   });
-  if (view.map && wide.matches) view.map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+  let zoomCtrl = null;
+  function updateControls() {
+    if (!view.map) return;
+    if (wide.matches && !zoomCtrl) {
+      zoomCtrl = new maplibregl.NavigationControl({ showCompass: false });
+      view.map.addControl(zoomCtrl, 'bottom-right');
+    } else if (!wide.matches && zoomCtrl) {
+      view.map.removeControl(zoomCtrl);
+      zoomCtrl = null;
+    }
+  }
+  updateControls();
+
+  // encuadre inicial: se repite si la página se reacomoda al terminar de cargar (fuentes, tamaño de la ventana),
+  // hasta que la persona mueva el mapa o elija una tienda
+  let userMoved = false;
+  function autoFit() {
+    if (!userMoved && view.ready && selectedId === null) view.fit(current(), false);
+  }
+  if (view.map) {
+    ['mousedown', 'touchstart', 'wheel'].forEach(ev => view.map.getCanvasContainer().addEventListener(ev, () => { userMoved = true; }, { passive: true }));
+    window.addEventListener('load', autoFit);
+    if (document.fonts) document.fonts.ready.then(autoFit);
+  }
 
   const current = () => S.filter(STORES, query.value, userPos);
 
@@ -72,7 +108,7 @@
       local ? S.plural(local, 'local más', 'locales más') : '',
       online ? S.plural(online, 'tienda online', 'tiendas online') : ''
     ].filter(Boolean).join(' y ')));
-    li.appendChild(S.el('span', '', rest.map(s => s.name).join(', ') + '.'));
+    li.appendChild(S.el('span', '', 'Están en la lista, sin pin en el mapa.'));
     const btn = S.el('button', 'btn', 'Ver en la lista');
     btn.type = 'button';
     btn.addEventListener('click', () => setList(true));
@@ -93,7 +129,7 @@
       deck.appendChild(li);
     }
     deck.scrollLeft = 0;
-    S.renderList(list, items, { selectedId, userPos, query: query.value, onPick: id => { setList(false); select(id, { fly: true, scrollCard: true }); } });
+    S.renderList(list, items, { selectedId, userPos, query: query.value, onPick: id => { if (!wide.matches) setList(false); select(id, { fly: true, scrollCard: true }); } });
     view.setData(items);
     if (selectedId !== null && !pins.some(s => s.id === selectedId)) clearSelection();
     else if (selectedId !== null) markCard(selectedId);
@@ -109,16 +145,48 @@
     markCard(null);
     S.markActive(list, null);
     view.highlight(null);
+    if (popup) { const p = popup; popup = null; p.remove(); }
+  }
+
+  // ficha del local sobre el pin (en PC, donde no hay tarjetas)
+  function showPopup(s) {
+    if (popup) { const p = popup; popup = null; p.remove(); }
+    if (!view.ready) return;
+    const box = S.el('div', 'pop');
+    const links = S.el('span', 'store__links');
+    links.append(S.goLink(s));
+    if (s.url) links.append(S.webLink(s));
+    box.append(S.logo(s), S.el('strong', '', s.name), S.el('span', '', `${s.addr}, ${s.district}.`), links);
+    const p = new maplibregl.Popup({ offset: [0, -50], maxWidth: '280px', focusAfterOpen: false })
+      .setLngLat([s.lng, s.lat]).setDOMContent(box).addTo(view.map);
+    p.on('close', () => { if (popup === p) { popup = null; clearSelection(); } });
+    popup = p;
+  }
+
+  // en PC, la fila elegida queda a la vista dentro de la lista
+  function revealRow(id) {
+    const row = list.querySelector(`.store[data-id="${id}"]`);
+    if (!row) return;
+    const box = list.getBoundingClientRect(), r = row.getBoundingClientRect();
+    if (r.top < box.top + 40 || r.bottom > box.bottom - 10) {
+      list.scrollBy({ top: r.top - box.top - box.height / 3, behavior: S.reduceMotion ? 'auto' : 'smooth' });
+    }
   }
 
   let syncing = false;
-  function select(id, { fly = true, scrollCard = false } = {}) {
+  function select(id, { fly = true, scrollCard = false, fromMap = false } = {}) {
     const s = STORES[id];
     if (!s || s.lat === undefined) return;
     selectedId = id;
     markCard(id);
     S.markActive(list, id);
     view.highlight(id);
+    if (wide.matches) {
+      if (fly && !fromMap) view.focus(s, { zoom: 14.2, duration: 800 });
+      showPopup(s);
+      revealRow(id);
+      return;
+    }
     if (fly) view.focus(s, { zoom: 14.2, duration: 700 });
     if (scrollCard) {
       const c = deck.querySelector(`.card[data-id="${id}"]`);
@@ -171,10 +239,12 @@
 
   // ---------- lista completa ----------
   function setList(open) {
+    if (wide.matches) open = true; // en PC la lista siempre está a la vista
     listOpen = open;
     document.body.classList.toggle('list-open', open);
     sheet.inert = !open;
     openBtn.setAttribute('aria-expanded', String(open));
+    if (wide.matches) return;
     if (open) {
       const row = list.querySelector('.store.is-active');
       if (row) row.scrollIntoView({ block: 'center' });
@@ -185,7 +255,7 @@
   }
   openBtn.addEventListener('click', () => setList(true));
   closeBtn.addEventListener('click', () => setList(false));
-  document.addEventListener('keydown', e => { if (e.key === 'Escape' && listOpen) setList(false); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && listOpen && !wide.matches) setList(false); });
 
   // deslizar la hoja hacia abajo (desde la cabecera) la cierra
   let dragY = null;
@@ -236,11 +306,40 @@
     });
   });
 
-  // alto de la barra: la lista abre justo debajo
-  const setBarH = () => document.documentElement.style.setProperty('--bar-h', `${bar.querySelector('.bar__row').getBoundingClientRect().bottom}px`);
+  // alto de la barra: en celular la lista abre justo debajo
+  const setBarH = () => {
+    if (!wide.matches) document.documentElement.style.setProperty('--bar-h', `${bar.querySelector('.bar__row').getBoundingClientRect().bottom}px`);
+  };
   if ('ResizeObserver' in window) new ResizeObserver(setBarH).observe(bar);
-  setBarH();
-  window.addEventListener('resize', updateNav);
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    updateNav();
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(autoFit, 200);
+  });
+
+  // PC: el logo, el buscador y la lista van juntos en el panel de la izquierda.
+  // Celular: la barra flota arriba y la lista se abre como hoja.
+  const barHome = bar.nextElementSibling;
+  function layout() {
+    if (wide.matches) {
+      sheet.prepend(bar);
+      setList(true);
+    } else {
+      barHome.before(bar);
+      if (popup) { const p = popup; popup = null; p.remove(); }
+      setList(false);
+    }
+    document.body.classList.toggle('is-wide', wide.matches);
+    setBarH();
+    updateControls();
+    updateNav();
+  }
+  wide.addEventListener('change', () => {
+    layout();
+    if (view.map) setTimeout(() => { view.map.resize(); if (selectedId === null) view.fit(current(), false); else select(selectedId, { fly: true, scrollCard: true }); }, 60);
+  });
+  layout();
 
   render();
 })();
