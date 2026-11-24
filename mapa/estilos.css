@@ -133,42 +133,58 @@ body.list-open .deck { transform: translateY(110%); }
   .sheet { top: 10px; left: auto; width: min(440px, 100vw); border-radius: 24px 0 0 0; }
 }
 
-/* ---------- laptop / escritorio ---------- */
-@media (min-width: 900px) {
-  .bar { top: 24px; left: 24px; right: auto; width: min(640px, calc(100vw - 48px)); }
-  .bar__row { grid-template-columns: auto 1fr auto; grid-template-areas: "logo search near"; gap: 14px; padding: 10px 10px 10px 16px; border-radius: 999px; }
-  .bar__logo { height: 30px; margin: 0 4px 0 0; }
-  .bar__near { min-height: 46px; padding: 0 18px; font-size: .95rem; }
-  .bar__count { margin-left: 16px; }
-
-  .deck { padding: 0 24px 24px; }
-  .deck__list-btn { margin: 0 0 12px; }
-  .deck__track { padding: 4px 60px 8px; scroll-padding: 0 60px; gap: 14px; }
-  .card { flex-basis: 340px; scroll-snap-align: start; }
-  .deck__nav {
-    display: grid; place-items: center;
-    position: absolute; bottom: calc(24px + 62px); z-index: 1;
-    width: 44px; height: 44px; border: 0; border-radius: 50%;
-    background: var(--verde); color: var(--blanco); cursor: pointer;
-    box-shadow: 0 8px 20px rgba(0, 60, 25, .25);
-    transition: opacity .2s, background-color .2s;
-  }
-  .deck__nav:hover { background: var(--verde-900); }
-  .deck__nav:disabled { opacity: 0; pointer-events: none; }
-  .deck__nav svg { width: 22px; height: 22px; }
-  .deck__nav--prev { left: 32px; }
-  .deck__nav--next { right: 32px; }
+/* ---------- PC / laptop ----------
+   Como "Dónde comprar" de la web de referencia: un panel fijo a la izquierda con el logo, el título, el buscador
+   y la lista por distrito; el mapa a la derecha con la ficha del local al tocar un pin.
+   La barra (logo, buscador, "Cerca de mí") se mueve dentro del panel desde app.js. */
+@media (min-width: 900px) and (min-height: 560px) {
+  .deck { display: none; }
 
   .sheet {
-    top: calc(var(--bar-h, 90px) + 36px); left: 24px; right: auto; bottom: 24px;
-    width: 420px; border-radius: 22px;
-    box-shadow: 0 24px 60px rgba(0, 60, 25, .2);
-    transform: translateX(calc(-100% - 40px));
+    top: 24px; left: 24px; right: auto; bottom: 24px;
+    width: 430px;
+    display: grid; grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto auto auto auto minmax(0, 1fr);
+    grid-template-areas: "logo logo" "title title" "search near" "count count" "list list";
+    column-gap: 10px;
+    padding: 24px 0 0;
+    border-radius: 22px;
+    box-shadow: 0 24px 60px rgba(0, 60, 25, .18);
+    transform: none; visibility: visible; transition: none;
   }
-  .sheet__grip { display: none; }
-  .sheet__head { padding: 20px 24px 6px; }
-  .sheet__title { font-size: 2rem; }
-  .sheet .store__links { gap: 0; }
-.sheet__list { padding: 0 24px 16px; }
-  body.list-open .deck { transform: none; left: 468px; }
+  /* el contenido de la barra y de la cabecera pasa a ser parte de la grilla del panel */
+  .sheet .bar, .sheet .bar__row, .sheet__head { display: contents; }
+  .sheet .bar { position: static; pointer-events: auto; }
+  .sheet__grip, .sheet__close { display: none; }
+  .sheet .bar__logo { grid-area: logo; justify-self: start; height: 34px; margin: 0 0 16px 24px; }
+  .sheet__title { grid-area: title; margin: 0 24px; font-size: clamp(1.8rem, 2.4vw, 2.2rem); line-height: .95; }
+  .sheet .search { grid-area: search; margin: 18px 0 0 24px; }
+  .sheet .bar__near { grid-area: near; margin: 18px 24px 0 0; min-height: 46px; padding: 0 18px; font-size: .95rem; }
+  .sheet .bar__near svg { display: none; } /* como en la referencia: solo el texto, así el buscador tiene más espacio */
+  .sheet .bar__count {
+    grid-area: count; display: block; margin: 12px 24px 4px; padding: 0;
+    background: none; box-shadow: none; border-radius: 0;
+    font-size: .88rem; font-weight: 400; color: var(--plomo);
+  }
+  .sheet__list { grid-area: list; padding: 0 24px 16px; scrollbar-width: thin; scrollbar-color: #cfdad1 transparent; }
+
+  /* mapa: los controles de zoom abajo a la derecha */
+  .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group { margin: 0 24px 34px 0; }
+}
+
+/* PC con pantalla angosta (o zoom del navegador): "Cerca de mí" sube junto al título y el buscador ocupa todo el ancho */
+@media (min-width: 900px) and (max-width: 1399px) and (min-height: 560px) {
+  .sheet { width: 380px; grid-template-areas: "logo logo" "title near" "search search" "count count" "list list"; }
+  .sheet__title { align-self: center; margin-right: 0; font-size: 1.75rem; }
+  .sheet .bar__near { align-self: center; margin-top: 0; min-height: 40px; padding: 0 14px; font-size: .88rem; }
+  .sheet .bar__near svg { display: block; }
+  .sheet .search { margin-right: 24px; margin-top: 14px; }
+}
+
+/* PC con poca altura (laptop pequeña o zoom del navegador) */
+@media (min-width: 900px) and (min-height: 560px) and (max-height: 720px) {
+  .sheet { top: 14px; bottom: 14px; left: 14px; padding-top: 18px; }
+  .sheet .bar__logo { height: 28px; margin-bottom: 10px; }
+  .sheet__title { font-size: 1.7rem; }
+  .sheet .search { margin-top: 12px; }
 }

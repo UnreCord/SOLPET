@@ -6,11 +6,12 @@ con el logo de Solpet y el verde `#007A33`. No menciona productos ni marcas: sol
 
 **Sitio:** https://unrecord.github.io/SOLPET/
 
-- El mapa ocupa toda la pantalla. Las tiendas se recorren deslizando las tarjetas de abajo: cada tarjeta enciende su pin.
-- "Ver lista" abre todas las tiendas agrupadas por distrito.
+- **Celular:** el mapa ocupa toda la pantalla. Las tiendas se recorren deslizando las tarjetas de abajo (cada tarjeta
+  enciende su pin) y "Ver lista" abre todas las tiendas agrupadas por distrito.
+- **PC / laptop:** como "Dónde comprar" de la web de referencia: panel fijo a la izquierda con el logo, el buscador y la
+  lista por distrito, y el mapa a la derecha. Al elegir una tienda (en la lista o en su pin) se abre su ficha sobre el mapa.
 - Buscador (distrito, tienda o calle), "Cerca de mí" (ordena por distancia y marca tu ubicación) y pines agrupados que
   se abren al tocarlos.
-- En laptop, flechas para pasar las tarjetas y la lista como panel a la izquierda.
 
 ## Publicar en GitHub Pages
 
