@@ -1,4 +1,4 @@
-/* Propuesta 2: el mismo diseño, con el mapa a pantalla completa.
+/* El mapa a pantalla completa.
    Las tiendas se recorren deslizando tarjetas abajo (cada tarjeta enciende su pin)
    y "Ver lista" abre la lista completa por distrito. */
 html, body { height: 100%; }

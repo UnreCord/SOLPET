@@ -1,4 +1,4 @@
-// Propuesta 2: mapa a pantalla completa + tarjetas deslizables + lista completa
+// Mapa a pantalla completa + tarjetas deslizables + lista completa
 (function () {
   const S = window.Solpet;
   const STORES = window.SOLPET_TIENDAS;
