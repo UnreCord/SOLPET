@@ -10,8 +10,17 @@ con el logo de Solpet y el verde `#007A33`. No menciona productos ni marcas: sol
   enciende su pin) y "Ver lista" abre todas las tiendas agrupadas por distrito.
 - **PC / laptop:** como "Dónde comprar" de la web de referencia: panel fijo a la izquierda con el logo, el buscador y la
   lista por distrito, y el mapa a la derecha. Al elegir una tienda (en la lista o en su pin) se abre su ficha sobre el mapa.
-- Buscador (distrito, tienda o calle), "Cerca de mí" (ordena por distancia y marca tu ubicación) y pines agrupados que
-  se abren al tocarlos.
+- En el celular, mientras se mueve el mapa, la barra y las tarjetas se vuelven transparentes. Las tarjetas se pueden
+  minimizar con el botón de doble flecha que está junto a "Ver lista".
+- Buscador (distrito, tienda o calle) con **búsqueda por voz**: tocando el micrófono, la persona dice su distrito o zona
+  ("estoy en Miraflores", "cerca de Larcomar") y el mapa le muestra la tienda más cercana. Funciona en Chrome (Android
+  y PC) y Safari (iPhone); en navegadores sin reconocimiento de voz el micrófono no aparece. Si se escribe un lugar que no
+  es una tienda y se pulsa "Buscar", hace lo mismo.
+- **"Cerca de mí"**: ordena las tiendas por la **distancia en auto** por las calles (servicio de rutas OSRM sobre
+  OpenStreetMap, el mismo tipo de cálculo que Google Maps) y marca tu ubicación. Si ese servicio no responde, usa la
+  distancia en línea recta y lo indica. No se muestra el tiempo de viaje, porque el servicio no considera el tráfico.
+- `mapa/lugares.js`: los 50 distritos de Lima y Callao (y nombres de uso común como "Surco", "SJL" o "Cercado") para la
+  búsqueda por lugar; otras zonas se buscan en OpenStreetMap.
 
 ## Publicar en GitHub Pages
 

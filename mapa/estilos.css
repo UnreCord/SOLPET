@@ -1,6 +1,6 @@
-/* El mapa a pantalla completa.
-   Las tiendas se recorren deslizando tarjetas abajo (cada tarjeta enciende su pin)
-   y "Ver lista" abre la lista completa por distrito. */
+/* Celular: el mapa a pantalla completa, la barra arriba y las tarjetas abajo (se pueden minimizar).
+   Mientras la persona mueve el mapa, la barra y las tarjetas se vuelven transparentes.
+   PC: ver el bloque "PC / laptop" al final. */
 html, body { height: 100%; }
 body { overflow: hidden; overscroll-behavior: none; }
 .map { position: fixed; inset: 0; }
@@ -14,40 +14,68 @@ body { overflow: hidden; overscroll-behavior: none; }
 .bar__row {
   pointer-events: auto;
   display: grid; grid-template-columns: 1fr auto; grid-template-areas: "logo near" "search search";
-  align-items: center; gap: 10px;
-  padding: 10px; border-radius: 22px;
+  align-items: center; gap: 6px 10px;
+  padding: 8px 8px 8px 10px; border-radius: 20px;
   background: var(--blanco);
   box-shadow: 0 10px 30px rgba(0, 60, 25, .16);
 }
-.bar__logo { grid-area: logo; height: 26px; width: auto; margin-left: 6px; }
+.bar__logo { grid-area: logo; height: 24px; width: auto; margin-left: 4px; }
 .bar .search { grid-area: search; }
-.bar__near { grid-area: near; min-height: 40px; padding: 0 14px; font-size: .88rem; }
-.bar__count {
-  display: inline-block; margin: 8px 0 0 6px; padding: 4px 12px;
-  border-radius: 999px; background: rgba(255, 255, 255, .92);
-  box-shadow: 0 4px 12px rgba(0, 60, 25, .12);
-  font-size: .8rem; font-weight: 600; color: var(--verde-900);
-  pointer-events: auto;
+.bar .search input { min-height: 42px; }
+.bar__near { grid-area: near; min-height: 32px; padding: 0 12px; gap: 6px; font-size: .8rem; }
+.bar__near svg { width: 15px; height: 15px; }
+/* en el celular no se muestra el conteo (los avisos salen en .toast); en PC va dentro del panel */
+.bar__count { display: none; }
+
+/* avisos breves (celular) */
+.toast {
+  position: fixed; z-index: 7; left: 12px; right: 12px;
+  top: calc(var(--bar-h, 110px) + 10px);
+  margin: 0 auto; max-width: 420px; padding: 10px 14px;
+  border-radius: 14px; background: var(--verde-900); color: var(--blanco);
+  font-size: .86rem; font-weight: 600; line-height: 1.35; text-align: center;
+  box-shadow: 0 10px 26px rgba(0, 40, 15, .3);
+  opacity: 0; transform: translateY(-6px); pointer-events: none;
+  transition: opacity .25s, transform .25s;
 }
-.bar__count:empty { display: none; }
+.toast.is-on { opacity: 1; transform: none; }
+.toast:empty { display: none; }
+
+/* al mover el mapa: barra y tarjetas transparentes para ver mejor */
+.bar__row, .deck { transition: opacity .25s ease, transform .35s var(--ease); }
+body:not(.is-wide):not(.list-open).is-moving .bar__row,
+body:not(.is-wide):not(.list-open).is-moving .deck { opacity: .28; }
 
 /* ---------- tarjetas ---------- */
 .deck {
   position: fixed; z-index: 4; left: 0; right: 0; bottom: 0;
   padding-bottom: calc(10px + var(--safe-b));
   pointer-events: none;
-  transition: transform .35s var(--ease), left .35s var(--ease);
 }
 .deck > * { pointer-events: auto; }
+.deck__actions { display: flex; justify-content: center; align-items: center; gap: 8px; margin-bottom: 10px; pointer-events: none; }
+.deck__actions > * { pointer-events: auto; }
 .deck__list-btn {
-  display: flex; margin: 0 auto 10px;
   min-height: 42px; padding: 0 18px;
   background: var(--blanco); color: var(--verde);
   box-shadow: 0 8px 22px rgba(0, 60, 25, .2);
 }
 .deck__list-btn:hover { background: var(--verde-050); }
+/* botón para minimizar o mostrar las tarjetas: cuadrado blanco con doble flecha */
+.deck__min {
+  width: 42px; height: 42px; display: grid; place-items: center; padding: 0;
+  border: 1px solid #dfe6df; border-radius: 12px; background: var(--blanco); cursor: pointer;
+  box-shadow: 0 8px 22px rgba(0, 60, 25, .2);
+}
+.deck__min svg { width: 22px; height: 22px; transition: transform .3s var(--ease); }
+.deck__min:hover { background: var(--bruma); }
+body.deck-min .deck__min svg { transform: rotate(180deg); }
+body.deck-min .deck__track { display: none; }
+.deck__track { animation: deckIn .3s var(--ease); }
+@keyframes deckIn { from { opacity: 0; transform: translateY(30px); } }
+
 .deck__track {
-  display: flex; align-items: flex-end; gap: 10px; /* cada tarjeta con su alto, alineadas abajo */
+  display: flex; align-items: stretch; gap: 10px; /* todas las tarjetas con el mismo alto */
   overflow-x: auto; overscroll-behavior-x: contain;
   scroll-snap-type: x mandatory; scroll-behavior: smooth;
   padding: 4px 16px 6px; scroll-padding: 0 16px;
@@ -57,7 +85,8 @@ body { overflow: hidden; overscroll-behavior: none; }
 .card {
   flex: 0 0 min(calc(100vw - 52px), 360px);
   scroll-snap-align: center;
-  display: grid; grid-template-columns: 60px minmax(0, 1fr); gap: 4px 14px; align-items: start;
+  display: grid; grid-template-columns: 56px minmax(0, 1fr); grid-template-rows: auto 1fr;
+  gap: 4px 14px; align-items: start;
   padding: 14px; border-radius: 20px;
   background: var(--blanco);
   box-shadow: 0 10px 26px rgba(0, 60, 25, .18), inset 0 0 0 2px transparent;
@@ -65,17 +94,22 @@ body { overflow: hidden; overscroll-behavior: none; }
   transition: box-shadow .2s;
 }
 .card.is-active { box-shadow: 0 10px 26px rgba(0, 60, 25, .22), inset 0 0 0 2.5px var(--amarillo); }
-.card .store__logo { width: 60px; height: 60px; grid-row: span 2; border-radius: 14px; }
+.card .store__logo { width: 56px; height: 56px; border-radius: 14px; }
 .card__pick { min-width: 0; padding: 0; border: 0; background: none; text-align: left; cursor: pointer; }
 .card__pick:focus-visible { outline-offset: 4px; border-radius: 6px; }
-.card__district { display: block; font-size: .72rem; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; color: var(--verde); }
-.card .store__name { font-size: 1.05rem; margin-top: 1px; }
-.card__foot { grid-column: 2; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+/* distrito y distancia en una sola línea */
+.card__meta { display: flex; align-items: baseline; gap: 6px; min-width: 0; white-space: nowrap; }
+.card__district { font-size: .72rem; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; color: var(--verde); overflow: hidden; text-overflow: ellipsis; }
+.card__km { flex: none; font-size: .74rem; font-weight: 700; color: var(--verde-900); }
+.card__km::before { content: "·"; margin-right: 6px; color: var(--verde); }
+/* nombre en una línea y dirección en máximo dos: así todas las tarjetas miden lo mismo */
+.card .store__name { font-size: 1.05rem; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card .store__addr { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.card__foot { grid-column: 2; align-self: end; display: flex; align-items: center; gap: 12px; flex-wrap: nowrap; margin-top: 8px; }
 .card__go { min-height: 38px; padding: 0 16px; font-size: .86rem; }
-.card .store__dist { margin-top: 0; }
 .card__foot .store__web { min-height: 38px; }
 /* ultima tarjeta: las tiendas que no tienen pin */
-.card.card--more { grid-template-columns: 1fr; align-content: center; gap: 2px; padding: 14px 16px; background: var(--verde); color: var(--blanco); }
+.card.card--more { grid-template-columns: 1fr; grid-template-rows: none; align-content: center; gap: 2px; padding: 14px 16px; background: var(--verde); color: var(--blanco); }
 .card--more strong { font-size: 1rem; line-height: 1.2; }
 .card--more span { font-size: .84rem; line-height: 1.3; opacity: .9; }
 .card--more .btn { justify-self: start; margin-top: 8px; min-height: 36px; padding: 0 16px; background: var(--amarillo); color: var(--verde-900); font-size: .86rem; }
@@ -116,16 +150,17 @@ body.list-open .deck { transform: translateY(110%); }
 }
 
 /* celulares muy angostos: "Cerca de mí" solo con icono */
-@media (max-width: 359px) {
-  .bar__near { width: 40px; padding: 0; }
+@media (max-width: 339px) {
+  .bar__near { width: 34px; padding: 0; }
   .bar__near span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 }
 
 /* celulares angostos (iPhone SE, Galaxy S9): logo más chico y los enlaces en una sola fila bajo el texto */
 @media (max-width: 374px) {
   .card { grid-template-columns: 48px minmax(0, 1fr); gap: 2px 12px; padding: 12px; }
-  .card .store__logo { width: 48px; height: 48px; grid-row: auto; }
+  .card .store__logo { width: 48px; height: 48px; }
   .card__foot { grid-column: 1 / -1; margin-top: 8px; gap: 14px; }
+  .card__km::before { margin-right: 4px; }
   .card__go { min-height: 36px; padding: 0 14px; }
 }
 
@@ -134,10 +169,11 @@ body.list-open .deck { transform: translateY(110%); }
   .bar__row { grid-template-columns: auto 1fr auto; grid-template-areas: "logo search near"; padding: 6px 8px; }
   .bar { right: auto; width: min(620px, calc(100vw - 20px)); }
   .bar__count { display: none; }
-  .deck__list-btn { position: absolute; right: 12px; bottom: calc(100% - 2px); margin: 0; }
+  .deck__actions { position: absolute; right: 12px; bottom: calc(100% - 2px); margin: 0; }
+  body.deck-min .deck__actions { bottom: calc(10px + var(--safe-b)); }
   .card { flex-basis: 320px; padding: 8px 10px; grid-template-columns: 44px minmax(0, 1fr); gap: 0 10px; border-radius: 16px; }
   .card .store__logo { width: 44px; height: 44px; border-radius: 10px; }
-  .card__district { display: none; }
+  .card .store__name { margin-top: 0; }
   .card .store__name { font-size: .95rem; }
   .card .store__addr { font-size: .8rem; }
   .card__foot { margin-top: 4px; }
@@ -151,7 +187,8 @@ body.list-open .deck { transform: translateY(110%); }
    y la lista por distrito; el mapa a la derecha con la ficha del local al tocar un pin.
    La barra (logo, buscador, "Cerca de mí") se mueve dentro del panel desde app.js. */
 @media (min-width: 900px) and (min-height: 560px) {
-  .deck { display: none; }
+  .deck, .toast { display: none; }
+  .sheet .bar__row { box-shadow: none; }
 
   .sheet {
     top: 24px; left: 24px; right: auto; bottom: 24px;

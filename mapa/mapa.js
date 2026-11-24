@@ -27,18 +27,54 @@
     const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLng / 2) ** 2;
     return 6371 * 2 * Math.asin(Math.sqrt(h));
   }
-  const distanceText = km => (km < 1 ? `a ${Math.round(km * 100) * 10} m` : `a ${decimal(Math.round(km * 10) / 10)} km`);
+  const kmText = km => (km < 1 ? `${Math.round(km * 100) * 10} m` : `${decimal(Math.round(km * 10) / 10)} km`);
+  // con ruta: distancia por las calles en auto; sin ruta (el servicio no respondió): distancia en línea recta.
+  // No se muestra el tiempo: el servicio de rutas no considera el tráfico y en Lima lo subestimaría.
+  const distanceText = s => (s.min !== undefined ? `${kmText(s.km)} en auto` : `${kmText(s.km)} en línea recta`);
 
-  // tiendas que coinciden con la búsqueda; con ubicación, de la más cercana a la más lejana
-  function filter(stores, query, userPos) {
+  // tiendas que coinciden con la búsqueda; con un punto de partida, de la más cercana a la más lejana
+  // (por la ruta en auto si se pudo calcular: routes = { id: { km, min } })
+  function filter(stores, query, userPos, routes) {
     const q = normalize(query || '');
     let list = stores.filter(s => !q || normalize(`${s.name} ${s.district} ${s.addr}${s.url ? ' online web' : ''}`).includes(q));
     if (userPos) {
       list = list
-        .map(s => (s.lat === undefined ? s : { ...s, km: distanceKm(userPos, s) }))
+        .map(s => {
+          if (s.lat === undefined) return s;
+          const r = routes && routes[s.id];
+          return r ? { ...s, km: r.km, min: r.min } : { ...s, km: distanceKm(userPos, s) };
+        })
         .sort((a, b) => (a.km ?? 1e9) - (b.km ?? 1e9));
     }
     return list;
+  }
+
+  // distancia en auto desde un punto a todas las tiendas con pin, por las calles (OSRM sobre OpenStreetMap).
+  // Es el mismo tipo de cálculo que "Cómo llegar" en auto de Google Maps; puede diferir un poco porque cada uno usa su
+  // propio mapa de calles y su tráfico. Devuelve null si el servicio no responde: la página usa entonces la línea recta.
+  async function routes(from, stores) {
+    const pins = stores.filter(s => s.lat !== undefined);
+    if (!pins.length) return {};
+    const coords = [[from.lng, from.lat], ...pins.map(s => [s.lng, s.lat])].map(c => c.map(v => v.toFixed(5)).join(',')).join(';');
+    const url = `https://router.project-osrm.org/table/v1/driving/${coords}?sources=0&annotations=distance,duration`;
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 7000);
+    try {
+      const r = await fetch(url, { signal: ctrl.signal });
+      if (!r.ok) return null;
+      const data = await r.json();
+      if (data.code !== 'Ok') return null;
+      const out = {};
+      pins.forEach((s, i) => {
+        const d = data.distances[0][i + 1], t = data.durations[0][i + 1];
+        if (d !== null && t !== null) out[s.id] = { km: d / 1000, min: t / 60 };
+      });
+      return out;
+    } catch (e) {
+      return null;
+    } finally {
+      clearTimeout(timer);
+    }
   }
 
   function countText(list, userPos) {
@@ -91,7 +127,9 @@
   // lista agrupada por distrito (el mismo diseño de la sección "Dónde comprar")
   function renderList(box, list, { selectedId = null, userPos = null, query = '', onPick } = {}) {
     box.innerHTML = '';
-    const districts = [...new Set(list.map(s => s.district))];
+    // con un punto de partida: una sola lista, de la más cercana a la más lejana (el distrito va en cada tienda)
+    const byDistance = !!userPos;
+    const districts = byDistance ? ['Más cercanas primero'] : [...new Set(list.map(s => s.district))];
     if (!userPos) districts.sort((a, b) => a.localeCompare(b, 'es'));
     // las tiendas online van al final
     if (districts.includes(ONLINE)) districts.push(districts.splice(districts.indexOf(ONLINE), 1)[0]);
@@ -101,7 +139,7 @@
       return;
     }
     districts.forEach(d => {
-      const items = list.filter(s => s.district === d);
+      const items = byDistance ? list : list.filter(s => s.district === d);
       const group = el('section', 'stores__group');
       const head = el('h3', 'stores__district', d);
       head.appendChild(el('span', '', String(items.length)));
@@ -114,8 +152,8 @@
         const pick = el('button', 'store__pick');
         pick.type = 'button';
         pick.appendChild(el('span', 'store__name', s.name));
-        pick.appendChild(el('span', 'store__addr', s.addr));
-        if (s.km !== undefined) pick.appendChild(el('span', 'store__dist', distanceText(s.km)));
+        pick.appendChild(el('span', 'store__addr', byDistance && !s.online ? `${s.addr}, ${s.district}` : s.addr));
+        if (s.km !== undefined) pick.appendChild(el('span', 'store__dist', distanceText(s)));
         const links = el('span', 'store__links');
         row.append(logo(s), pick, links);
         if (!s.online) links.append(goLink(s));
@@ -215,7 +253,7 @@
     const container = typeof opts.container === 'string' ? document.getElementById(opts.container) : opts.container;
     if (!window.maplibregl) {
       container.appendChild(el('p', 'map__fallback', 'No pudimos cargar el mapa. Revisa tu conexión: la lista de puntos de venta sigue disponible.'));
-      api.setData = api.highlight = api.focus = api.fit = api.showMe = () => {};
+      api.setData = api.highlight = api.focus = api.fit = api.fitPoints = api.showMe = api.hideMe = () => {};
       return api;
     }
     const pad = () => (opts.padding ? opts.padding() : { top: 60, bottom: 60, left: 40, right: 40 });
@@ -266,6 +304,14 @@
       });
     };
 
+    // encuadra varios puntos (por ejemplo, el lugar buscado y su tienda más cercana)
+    api.fitPoints = (points, animate = true) => {
+      if (!api.ready || !points.length) return;
+      const bounds = new maplibregl.LngLatBounds();
+      points.forEach(pt => bounds.extend([pt.lng, pt.lat]));
+      map.fitBounds(bounds, { padding: pad(), maxZoom: 15, duration: animate && !reduceMotion ? 800 : 0 });
+    };
+
     api.fit = (list, animate) => {
       if (!api.ready) return;
       const pts = onMap(list);
@@ -275,16 +321,17 @@
       map.fitBounds(bounds, { padding: pad(), maxZoom: 14.5, duration: animate && !reduceMotion ? 700 : 0 });
     };
 
-    api.showMe = pos => {
+    // punto de partida: tu ubicación (punto azul) o el lugar que buscaste (punto verde con su nombre)
+    api.showMe = (pos, label) => {
       if (!api.ready) return;
-      if (!meMarker) {
-        const dot = el('span', 'me-dot');
-        dot.setAttribute('role', 'img');
-        dot.setAttribute('aria-label', 'Tu ubicación');
-        meMarker = new maplibregl.Marker({ element: dot });
-      }
-      meMarker.setLngLat([pos.lng, pos.lat]).addTo(map);
+      if (meMarker) meMarker.remove();
+      const dot = el('span', label ? 'me-dot me-dot--place' : 'me-dot');
+      dot.setAttribute('role', 'img');
+      dot.setAttribute('aria-label', label ? `Punto de búsqueda: ${label}` : 'Tu ubicación');
+      if (label) dot.appendChild(el('span', 'me-dot__label', label));
+      meMarker = new maplibregl.Marker({ element: dot }).setLngLat([pos.lng, pos.lat]).addTo(map);
     };
+    api.hideMe = () => { if (meMarker) { meMarker.remove(); meMarker = null; } };
 
     map.on('load', async () => {
       brandMap(map);
@@ -342,6 +389,6 @@
 
   window.Solpet = {
     reduceMotion, normalize, plural, el, onMap, directionsUrl, distanceText,
-    filter, countText, logo, goLink, webLink, renderList, markActive, createMap, locate
+    filter, routes, kmText, countText, logo, goLink, webLink, renderList, markActive, createMap, locate
   };
 })();

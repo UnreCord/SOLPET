@@ -21,21 +21,25 @@
   <script src="assets/vendor/maplibre/maplibre-gl.js" defer></script>
   <script src="mapa/tiendas.js" defer></script>
   <script src="mapa/mapa.js" defer></script>
+  <script src="mapa/lugares.js" defer></script>
   <script src="mapa/app.js" defer></script>
 </head>
 <body>
   <h1 class="sr-only">Solpet: puntos de venta en Lima</h1>
   <div class="map" id="map" role="region" aria-label="Mapa de puntos de venta en Lima"></div>
 
-  <!-- barra superior: logo, buscador y "cerca de mí" -->
+  <!-- barra superior: logo, buscador (con voz) y "cerca de mí" -->
   <header class="bar">
     <div class="bar__row">
       <img class="bar__logo" src="assets/solpet-logo.webp" alt="Solpet" width="640" height="208">
-      <label class="search">
-        <span class="sr-only">Buscar por distrito, tienda o calle</span>
+      <div class="search">
+        <label class="sr-only" for="store-q">Buscar por distrito, tienda o calle</label>
         <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg>
         <input id="store-q" type="search" placeholder="Distrito, tienda o calle" autocomplete="off" enterkeyhint="search">
-      </label>
+        <button class="search__mic" id="voice" type="button" aria-label="Buscar por voz: di tu distrito o zona" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>
+        </button>
+      </div>
       <button class="btn btn--verde bar__near" id="near-me" type="button" aria-label="Ver los puntos de venta más cercanos a mí">
         <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3 3 10.5l7.5 3 3 7.5z"/></svg>
         <span>Cerca de mí</span>
@@ -44,12 +48,20 @@
     <p class="bar__count" id="store-count" aria-live="polite"></p>
   </header>
 
+  <!-- avisos breves en el celular (ubicación, búsqueda por voz, tienda más cercana) -->
+  <p class="toast" id="toast" role="status" aria-live="polite"></p>
+
   <!-- tarjetas que se deslizan; cada una corresponde a un pin -->
   <section class="deck" aria-label="Puntos de venta">
-    <button class="btn deck__list-btn" id="open-list" type="button" aria-expanded="false" aria-controls="sheet">
-      <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="3.5" cy="6" r="1.2" fill="currentColor"/><circle cx="3.5" cy="12" r="1.2" fill="currentColor"/><circle cx="3.5" cy="18" r="1.2" fill="currentColor"/></svg>
-      <span>Ver lista</span>
-    </button>
+    <div class="deck__actions">
+      <button class="btn deck__list-btn" id="open-list" type="button" aria-expanded="false" aria-controls="sheet">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="3.5" cy="6" r="1.2" fill="currentColor"/><circle cx="3.5" cy="12" r="1.2" fill="currentColor"/><circle cx="3.5" cy="18" r="1.2" fill="currentColor"/></svg>
+        <span>Ver lista</span>
+      </button>
+      <button class="deck__min" id="toggle-deck" type="button" aria-expanded="true" aria-controls="deck" aria-label="Ocultar las tiendas para ver más mapa">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 5 6 6 6-6" stroke="var(--verde)"/><path d="m6 12 6 6 6-6" stroke="var(--amarillo)"/></svg>
+      </button>
+    </div>
     <button class="deck__nav deck__nav--prev" type="button" data-dir="-1" aria-label="Tienda anterior"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5-7 7 7 7"/></svg></button>
     <ul class="deck__track" id="deck"></ul>
     <button class="deck__nav deck__nav--next" type="button" data-dir="1" aria-label="Tienda siguiente"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg></button>
