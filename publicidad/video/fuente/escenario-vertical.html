@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&display=block" rel="stylesheet">
+<style>
+  :root { --verde: #007A33; --verde-900: #005a26; --amarillo: #F6BB2F; --plomo: #50534c; }
+  * { box-sizing: border-box; margin: 0; }
+  body { width: 1080px; height: 1920px; overflow: hidden; position: relative; background: #fff; font-family: "Bricolage Grotesque", sans-serif; color: var(--plomo); }
+  .panel { position: absolute; left: 880px; top: 0; right: 0; bottom: 0; background: var(--verde); overflow: hidden; }
+  .halo { position: absolute; border-radius: 50%; background: rgba(255,255,255,.08); }
+  .banda { position: absolute; left: 880px; right: 0; bottom: 0; height: 14px; background: var(--amarillo); }
+  /* celular: la pantalla (444 x 960) se pone encima con el video; aquí solo el marco y la sombra */
+  .marco { position: absolute; left: 1001px; top: 51px; width: 462px; height: 978px; border-radius: 62px; background: #121614;
+    box-shadow: 0 0 0 2px rgba(255,255,255,.2), 0 40px 80px rgba(0,40,15,.45); }
+  .qr { position: absolute; left: 1540px; top: 330px; width: 310px; padding: 20px; background: #fff; border-radius: 26px; box-shadow: 0 24px 60px rgba(0,40,15,.3); }
+  .qr img { width: 100%; display: block; }
+  .qr span { position: absolute; left: 50%; top: -24px; transform: translateX(-50%); white-space: nowrap; background: var(--amarillo); color: var(--verde-900);
+    font-weight: 800; font-variation-settings: "wdth" 85; font-size: 30px; padding: 8px 26px; border-radius: 999px; }
+  .bajo-qr { position: absolute; left: 1520px; width: 350px; top: 690px; text-align: center; color: #fff; font-size: 26px; font-weight: 600; line-height: 1.3; }
+  .logo { position: absolute; left: 96px; top: 84px; width: 250px; }
+  .paso { position: absolute; left: 96px; top: 262px; display: inline-block; font-weight: 700; font-size: 24px; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--verde); background: rgba(0,122,51,.1); padding: 10px 22px; border-radius: 999px; }
+  .titulo { position: absolute; left: 96px; top: 330px; width: 720px; font-weight: 800; font-variation-settings: "wdth" 80; font-size: 96px; line-height: .95; letter-spacing: -0.03em; color: var(--verde); }
+  .texto { position: absolute; left: 96px; width: 700px; font-size: 36px; line-height: 1.32; color: var(--plomo); }
+  .progreso { position: absolute; left: 96px; top: 940px; width: 700px; display: grid; grid-template-columns: repeat(9, 1fr); gap: 10px; }
+  .progreso i { height: 10px; border-radius: 999px; background: #e3e9e4; }
+  .progreso i.hecho { background: var(--verde); }
+  .progreso i.ahora { background: var(--amarillo); }
+  .cierre .qr { left: 1515px; top: 280px; width: 360px; }
+  .cierre .bajo-qr { top: 700px; }
+
+  .panel { left: 0; top: 560px; right: 0; bottom: 0; }
+  .banda { left: 0; }
+  .marco { left: 70px; top: 640px; width: 520px; height: 1100px; border-radius: 70px; }
+  .qr { left: 650px; top: 880px; width: 360px; }
+  .bajo-qr { left: 630px; width: 400px; top: 1270px; }
+  .cierre .qr { left: 650px; top: 880px; width: 360px; }
+  .cierre .bajo-qr { top: 1270px; }
+  .logo { left: 70px; top: 70px; width: 230px; }
+  .titulo { left: 70px; width: 940px; font-size: 84px; }
+  .paso { left: 70px; }
+  .texto { left: 70px; width: 940px; font-size: 34px; }
+  .progreso { left: 650px; top: 1680px; width: 360px; gap: 8px; }
+  .progreso i { background: rgba(255,255,255,.28); }
+  .progreso i.hecho { background: #fff; }
+  .progreso i.ahora { background: var(--amarillo); }
+</style></head>
+<body>
+  <div class="panel">
+    <div class="halo" style="width:900px;height:900px;left:-120px;top:90px"></div>
+    <div class="halo" style="width:600px;height:600px;left:30px;top:240px"></div>
+  </div>
+  <div class="banda"></div>
+  <div class="marco"></div>
+  <div class="qr"><span>Escanéame</span><img src="../../../qr/qr-mapa-solpet.svg" alt=""></div>
+  <p class="bajo-qr">Pruébalo ahora en tu celular</p>
+  <img class="logo" src="../../../assets/solpet-logo.svg" alt="">
+  <span class="paso" id="paso"></span>
+  <h1 class="titulo" id="titulo"></h1>
+  <p class="texto" id="texto"></p>
+  <div class="progreso" id="progreso"></div>
+<script>window.__vertical = true;
+  const PASOS = {
+    intro:     ['Guía rápida', 'Cómo usar el mapa de puntos de venta', 'Encuentra la tienda o veterinaria más cercana en segundos.'],
+    mapa:      [1, 'Mira todas las tiendas', 'Cada pin es una tienda o veterinaria. Toca un grupo para acercarte.'],
+    tarjetas:  [2, 'Desliza las tarjetas', 'Cada tarjeta es una tienda y se marca en el mapa.'],
+    buscar:    [3, 'Busca tu distrito', 'Escribe un distrito, el nombre de una tienda o una calle.'],
+    cerca:     [4, 'Toca «Cerca de mí»', 'Te muestra la tienda más cercana y su distancia en auto.'],
+    voz:       [5, 'O dilo por voz', 'Toca el micrófono y di dónde estás: «Estoy en Miraflores».'],
+    llegar:    [6, 'Toca «Cómo llegar»', 'Google Maps te lleva con la ruta en auto.'],
+    lista:     [7, 'Ve todas en una lista', 'Por distrito, o de la más cercana a la más lejana.'],
+    minimizar: [8, 'Más espacio para el mapa', 'Oculta las tarjetas con la doble flecha y vuelve a mostrarlas cuando quieras.'],
+    whatsapp:  [9, '¿Dudas? Escríbenos', 'El botón de WhatsApp abre el chat con el mensaje ya escrito.'],
+    cierre:    ['¡Listo!', 'Escanea el código y pruébalo', 'Apunta la cámara de tu celular al código de la derecha.'],
+  };
+  const id = new URLSearchParams(location.search).get('paso') || 'intro';
+  const [n, t, d] = PASOS[id];
+  document.getElementById('paso').textContent = typeof n === 'number' ? `Paso ${n} de 9` : n;
+  document.getElementById('titulo').textContent = t;
+  const tx = document.getElementById('texto'); tx.textContent = d;
+  if (id === 'cierre') document.body.classList.add('cierre');
+  const prog = document.getElementById('progreso');
+  for (let i = 1; i <= 9; i++) {
+    const e = document.createElement('i');
+    if (id === 'cierre' || (typeof n === 'number' && i < n)) e.className = 'hecho';
+    if (typeof n === 'number' && i === n) e.className = 'ahora';
+    prog.appendChild(e);
+  }
+  // el texto va justo debajo del título (que puede ocupar 2 o 3 líneas)
+  // (se llama cuando ya cargó la tipografía) el bloque paso + título + texto queda centrado entre el logo y la barra
+  window.__acomodar = () => {
+    const paso = document.getElementById('paso'), tit = document.getElementById('titulo');
+    const alto = paso.offsetHeight + 26 + tit.offsetHeight + 30 + tx.offsetHeight;
+    const top = Math.round((window.__vertical ? 180 : 200) + ((window.__vertical ? 530 : 900) - (window.__vertical ? 180 : 200) - alto) / 2);
+    paso.style.top = top + 'px';
+    tit.style.top = (top + paso.offsetHeight + 26) + 'px';
+    tx.style.top = (top + paso.offsetHeight + 26 + tit.offsetHeight + 30) + 'px';
+  };
+</script>
+</body></html>

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; }
+  body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: #efeae2; display: flex; flex-direction: column; }
+  .top { display: flex; align-items: center; gap: 10px; padding: 12px 12px; background: #008069; color: #fff; }
+  .top svg { width: 22px; height: 22px; }
+  .avatar { width: 40px; height: 40px; border-radius: 50%; background: #fff; display: grid; place-items: center; overflow: hidden; }
+  .avatar img { width: 34px; height: 34px; }
+  .nombre { font-weight: 600; font-size: 17px; line-height: 1.2; }
+  .estado { font-size: 13px; opacity: .85; }
+  .chat { flex: 1; padding: 14px 12px; display: flex; flex-direction: column; gap: 8px; overflow: hidden;
+    background-image: radial-gradient(rgba(0,0,0,.035) 1px, transparent 1px); background-size: 18px 18px; }
+  .fecha { align-self: center; background: #fff; color: #54656f; font-size: 12.5px; padding: 5px 12px; border-radius: 8px; box-shadow: 0 1px 1px rgba(0,0,0,.08); }
+  .aviso { align-self: center; max-width: 88%; text-align: center; background: #ffeecd; color: #54656f; font-size: 12.5px; line-height: 1.35; padding: 6px 10px; border-radius: 8px; }
+  .burbuja { align-self: flex-end; max-width: 82%; background: #d9fdd3; color: #111b21; font-size: 15.5px; line-height: 1.38;
+    padding: 7px 9px 6px 10px; border-radius: 10px 0 10px 10px; box-shadow: 0 1px 1px rgba(0,0,0,.1);
+    opacity: 0; transform: translateY(14px) scale(.96); transition: .35s ease-out; }
+  .burbuja.on { opacity: 1; transform: none; }
+  .meta { display: flex; justify-content: flex-end; align-items: center; gap: 3px; margin-top: 2px; font-size: 11.5px; color: #667781; }
+  .meta svg { width: 17px; height: 11px; }
+  .barra { display: flex; align-items: flex-end; gap: 8px; padding: 8px 8px 14px; }
+  .caja { flex: 1; background: #fff; border-radius: 22px; padding: 11px 16px; font-size: 15.5px; line-height: 1.38; color: #111b21; min-height: 46px; box-shadow: 0 1px 1px rgba(0,0,0,.08); }
+  .caja.vacia { color: #8696a0; }
+  #enviar { width: 48px; height: 48px; flex: none; border: 0; border-radius: 50%; background: #00a884; color: #fff; display: grid; place-items: center; }
+  #enviar svg { width: 24px; height: 24px; }
+</style></head>
+<body>
+  <div class="top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+    <div class="avatar"><img src="assets/huella-solpet.svg" alt=""></div>
+    <div><div class="nombre">Solpet</div><div class="estado">+51 960 471 967</div></div>
+  </div>
+  <div class="chat" id="chat">
+    <span class="fecha">Hoy</span>
+    <span class="aviso">El mensaje ya viene escrito desde el mapa. Solo hay que enviarlo.</span>
+  </div>
+  <div class="barra">
+    <div class="caja" id="caja">{{MENSAJE}}</div>
+    <button id="enviar" aria-label="Enviar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.4 20.4 21 12 3.4 3.6 3.39 10.1 15 12 3.39 13.9z"/></svg></button>
+  </div>
+<script>
+  window.__enviar = () => {
+    const caja = document.getElementById('caja');
+    const b = document.createElement('div'); b.className = 'burbuja';
+    const h = new Date(); const hora = `${h.getHours()}:${String(h.getMinutes()).padStart(2, '0')}`;
+    b.innerHTML = `${caja.innerHTML}<div class="meta">${hora}<svg viewBox="0 0 18 11" fill="none" stroke="#53bdeb" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6l3.5 3.5L11 2M7 9.5l1 1L16 2"/></svg></div>`;
+    document.getElementById('chat').appendChild(b);
+    caja.textContent = 'Mensaje'; caja.classList.add('vacia');
+    requestAnimationFrame(() => requestAnimationFrame(() => b.classList.add('on')));
+  };
+</script>
+</body></html>
