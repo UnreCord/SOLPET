@@ -82,7 +82,6 @@ python3 herramientas/generar-qr.py https://la-direccion-final/ qr-mapa-solpet
 
 `publicidad/` tiene el kit para activaciones, ferias y redes (roll-up, afiche, hablador, sticker, pantalla, historia y
 post), con el QR y una captura real del mapa. Ver `publicidad/README.md` para las medidas y las indicaciones de imprenta.
-`publicidad/video/` tiene el video guía (horizontal y vertical, sin música) para pantallas de eventos.
 
 ## Pendiente
 

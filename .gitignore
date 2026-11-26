@@ -2,8 +2,3 @@
 Thumbs.db
 node_modules/
 __pycache__/
-publicidad/video/fuente/frames/
-publicidad/video/fuente/*.png
-publicidad/video/fuente/*.mp4
-publicidad/video/fuente/celular.txt
-publicidad/video/fuente/registro.json
