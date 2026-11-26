@@ -172,3 +172,10 @@ button, input { font: inherit; color: inherit; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: 0s !important; animation-duration: 0s !important; scroll-behavior: auto !important; }
 }
+
+/* contacto al final de la lista */
+.contacto { margin: 18px 0 6px; padding: 16px; border-radius: 16px; background: var(--bruma); text-align: center; }
+.contacto__titulo { font-weight: 700; color: var(--verde-900); font-size: .92rem; }
+.contacto__acciones { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px 18px; margin-top: 8px; }
+.contacto__acciones a { display: inline-flex; align-items: center; min-height: 36px; font-size: .88rem; font-weight: 700; color: var(--verde); text-decoration: underline; text-decoration-color: var(--amarillo); text-decoration-thickness: 2px; text-underline-offset: 4px; }
+.contacto__wsp::before { content: ""; width: 10px; height: 10px; margin-right: 7px; border-radius: 50%; background: #25D366; }

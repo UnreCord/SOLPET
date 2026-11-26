@@ -1,0 +1,75 @@
+/* Piezas de publicidad del mapa Solpet.
+   Todo se mide en rem: 100rem = ancho de la pieza (el script de generación fija el tamaño de 1rem),
+   así la misma pieza sale en PDF para imprenta (en mm) y en PNG (en px) con las mismas proporciones.
+   --b es el sangrado: 3 mm en los PDF, 0 en los PNG. */
+:root {
+  --verde: #007A33;
+  --verde-900: #005a26;
+  --amarillo: #F6BB2F;
+  --plomo: #50534c;
+  --bruma: #eff3ee;
+  --blanco: #ffffff;
+  --b: 0px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--blanco); }
+body {
+  font-family: "Bricolage Grotesque", sans-serif; color: var(--plomo);
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  width: calc(var(--w) + 2 * var(--b)); height: calc(var(--h) + 2 * var(--b));
+  overflow: hidden; position: relative;
+}
+@page { margin: 0; }
+img { display: block; }
+
+/* área final (sin sangrado) */
+.pieza { position: absolute; left: var(--b); top: var(--b); width: var(--w); height: var(--h); }
+/* fondos que llegan al borde: se extienden hasta el sangrado */
+.sangra { position: absolute; }
+.sangra.izq { left: calc(-1 * var(--b)); }
+.sangra.der { right: calc(-1 * var(--b)); }
+.sangra.arr { top: calc(-1 * var(--b)); }
+.sangra.aba { bottom: calc(-1 * var(--b)); }
+
+.titular {
+  font-weight: 800; font-variation-settings: "wdth" 80;
+  line-height: .95; letter-spacing: -0.03em; color: var(--verde);
+}
+.etiqueta {
+  display: inline-block; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--verde); background: rgba(0, 122, 51, .1); border-radius: 999px;
+}
+
+/* celular con la captura real del mapa */
+.celular {
+  position: absolute; background: #121614; border-radius: 13% / 6.2%;
+  padding: 3.2%; box-shadow: 0 2.5rem 5rem rgba(0, 40, 15, .35);
+}
+.celular::before { /* isla de la cámara */
+  content: ""; position: absolute; left: 50%; top: 2.1%; width: 30%; height: 2.6%;
+  transform: translateX(-50%); background: #121614; border-radius: 999px; z-index: 2;
+}
+.celular img { width: 100%; height: auto; border-radius: 10.5% / 4.9%; }
+
+/* recuadro del QR */
+.qr { position: absolute; background: var(--blanco); border-radius: 7%; box-shadow: 0 1.5rem 4rem rgba(0, 40, 15, .25); }
+.qr img { width: 100%; height: auto; }
+.qr__cta {
+  position: absolute; left: 50%; transform: translateX(-50%);
+  white-space: nowrap; font-weight: 800; font-variation-settings: "wdth" 85; letter-spacing: .02em;
+  color: var(--verde-900); background: var(--amarillo); border-radius: 999px;
+}
+
+/* pasos */
+.pasos { list-style: none; display: grid; }
+.pasos li { display: grid; grid-template-columns: auto 1fr; align-items: center; }
+.pasos b {
+  display: grid; place-items: center; border-radius: 50%;
+  background: var(--amarillo); color: var(--verde-900); font-weight: 800;
+}
+.pasos span { font-weight: 600; line-height: 1.2; }
+
+/* círculos concéntricos y pines decorativos (como en la imagen para compartir) */
+.halo { position: absolute; border-radius: 50%; background: rgba(255, 255, 255, .08); }
+.pin { position: absolute; height: auto; }
+.web { font-weight: 700; letter-spacing: .01em; }

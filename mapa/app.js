@@ -59,7 +59,8 @@
       // medidas sin animaciones (al cerrar la lista o minimizar, las tarjetas todavía se están moviendo)
       const top = bar.offsetTop + bar.querySelector('.bar__row').offsetHeight + 20;
       const bottom = listOpen ? 40 : deckBox.offsetHeight + 16;
-      p = { top, bottom, left: 30, right: 30 };
+      // a los lados queda aire para la etiqueta del lugar buscado ("Miraflores") y para los pines
+      p = { top, bottom, left: 56, right: 56 };
     }
     const fit = (a, b, total) => {
       const over = a + b + 180 - total;
@@ -178,6 +179,8 @@
     }
     deck.scrollLeft = 0;
     S.renderList(list, items, { selectedId, userPos: origin, query: query.value, onPick: id => { if (!wide.matches) setList(false); select(id, { fly: true, scrollCard: true }); } });
+    list.appendChild(contacto());
+    actualizarWhatsApp();
     view.setData(items);
     if (selectedId !== null && !pins.some(s => s.id === selectedId)) clearSelection();
     else if (selectedId !== null) markCard(selectedId);
@@ -456,6 +459,36 @@
       };
       try { rec.start(); } catch (err) { rec = null; voiceBtn.classList.remove('is-listening'); }
     });
+  }
+
+  // ---------- WhatsApp y llamadas ----------
+  const TELEFONO = '51960471967';          // +51 960 471 967
+  const TELEFONO_VISIBLE = '960 471 967';
+  // el mensaje lleva el lugar buscado o la ubicación de "Cerca de mí"; si no hay ninguno, el texto para completar
+  function mensajeWhatsApp() {
+    let lugar = '[Inserte ubicación referencial]';
+    if (origin && origin.label) lugar = origin.label;
+    else if (origin) lugar = `mi ubicación (https://maps.google.com/?q=${origin.lat.toFixed(5)},${origin.lng.toFixed(5)})`;
+    return `Hola, necesito saber cuáles son las tiendas más cercanas a ${lugar}.`;
+  }
+  const enlaceWhatsApp = () => `https://wa.me/${TELEFONO}?text=${encodeURIComponent(mensajeWhatsApp())}`;
+  const wsp = $('#wsp');
+  const actualizarWhatsApp = () => { if (wsp) wsp.href = enlaceWhatsApp(); };
+  if (wsp) ['pointerdown', 'focus', 'click'].forEach(ev => wsp.addEventListener(ev, actualizarWhatsApp));
+
+  // al final de la lista: contacto por WhatsApp o por llamada
+  function contacto() {
+    const box = S.el('div', 'contacto');
+    box.appendChild(S.el('p', 'contacto__titulo', '¿Necesitas ayuda para encontrar una tienda?'));
+    const fila = S.el('p', 'contacto__acciones');
+    const w = S.el('a', 'contacto__wsp', 'WhatsApp');
+    w.href = enlaceWhatsApp(); w.target = '_blank'; w.rel = 'noopener';
+    w.addEventListener('pointerdown', () => { w.href = enlaceWhatsApp(); });
+    const t = S.el('a', 'contacto__tel', `Llamar al ${TELEFONO_VISIBLE}`);
+    t.href = `tel:+${TELEFONO}`;
+    fila.append(w, t);
+    box.appendChild(fila);
+    return box;
   }
 
   // ---------- cerca de mí ----------

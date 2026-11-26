@@ -22,6 +22,12 @@ con el logo de Solpet y el verde `#007A33`. No menciona productos ni marcas: sol
 - `mapa/lugares.js`: los 50 distritos de Lima y Callao (y nombres de uso común como "Surco", "SJL" o "Cercado") para la
   búsqueda por lugar; otras zonas se buscan en OpenStreetMap.
 
+- **Contacto:** botón de WhatsApp abajo a la derecha (en el celular, en la fila de "Ver lista") que abre un chat con el
+  **+51 960 471 967** y este mensaje ya escrito: *"Hola, necesito saber cuáles son las tiendas más cercanas a
+  [Inserte ubicación referencial]."* Si la persona buscó un lugar o usó "Cerca de mí", el mensaje ya lleva ese lugar
+  (o un enlace a su ubicación). Al final de la lista también están "WhatsApp" y "Llamar al 960 471 967".
+  El número y el mensaje se cambian en `mapa/app.js` (`TELEFONO` y `mensajeWhatsApp`).
+
 ## Publicar en GitHub Pages
 
 1. En el repositorio: **Settings → Pages**.
@@ -54,8 +60,15 @@ el mapa base (openfreemap.org).
 
 ## QR
 
-`qr/qr-mapa-solpet.*` lleva directo a https://unrecord.github.io/SOLPET/ y funciona en cuanto GitHub Pages esté activo.
-Si el mapa se publica en otra dirección (por ejemplo un dominio propio), se regenera así:
+`qr/` tiene el QR que lleva directo a https://unrecord.github.io/SOLPET/:
+
+- `qr-mapa-solpet.svg` / `.png`: verde con la huella amarilla (el principal). El SVG es vectorial, también la huella:
+  sirve para cualquier tamaño. El PNG mide 3000 px.
+- `qr-mapa-solpet-negro.svg` / `.png`: en negro, para impresiones en blanco y negro.
+- `qr-mapa-solpet-tarjeta.png`: QR con el logo y una línea de texto, para compartir.
+
+Usa corrección de errores alta, así que se lee aunque la huella tape el centro. Si el mapa se publica en otra
+dirección (por ejemplo un dominio propio), se regenera así y luego se regeneran las piezas de publicidad:
 
 ```bash
 pip install segno pillow
@@ -65,8 +78,10 @@ pip install segno pillow
 python3 herramientas/generar-qr.py https://la-direccion-final/ qr-mapa-solpet
 ```
 
-Usa corrección de errores alta, así que se lee aunque la huella tape el centro. Si la dirección cambia después de
-imprimir el QR, los impresos dejan de funcionar: conviene definirla antes de imprimir.
+## Publicidad
+
+`publicidad/` tiene el kit para activaciones, ferias y redes (roll-up, afiche, hablador, sticker, pantalla, historia y
+post), con el QR y una captura real del mapa. Ver `publicidad/README.md` para las medidas y las indicaciones de imprenta.
 
 ## Pendiente
 

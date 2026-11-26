@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es" data-impresion="148x210" data-vista="900">
+<head>
+<meta charset="utf-8">
+<title>Hablador A5 · Mapa de puntos de venta Solpet</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&display=block" rel="stylesheet">
+<link rel="stylesheet" href="comun.css">
+<style>
+  /* para mostradores y mesas: el QR es el protagonista */
+  .logo { position: absolute; left: 50%; transform: translateX(-50%); top: 7rem; width: 42rem; }
+  .titular { position: absolute; left: 6rem; right: 6rem; top: 24rem; font-size: 9.4rem; text-align: center; }
+  .panel { left: calc(-1 * var(--b)); right: calc(-1 * var(--b)); top: 78rem; bottom: calc(-1 * var(--b)); background: var(--verde); overflow: hidden; }
+  .banda { left: calc(-1 * var(--b)); right: calc(-1 * var(--b)); bottom: calc(-1 * var(--b)); height: calc(3rem + var(--b)); background: var(--amarillo); }
+  .qr { left: 50%; transform: translateX(-50%); top: 53rem; width: 56rem; padding: 3.4rem; }
+  .qr__cta { top: -3.4rem; font-size: 3.8rem; padding: 1.4rem 4.2rem; }
+  .pasos { position: absolute; left: 5rem; right: 5rem; top: 116rem; grid-template-columns: repeat(3, 1fr); gap: 3rem; color: var(--blanco); }
+  .pasos li { grid-template-columns: 1fr; justify-items: center; text-align: center; gap: 1.6rem; }
+  .pasos b { width: 6rem; height: 6rem; font-size: 3.2rem; }
+  .pasos span { font-size: 3.1rem; }
+  .web { position: absolute; left: 0; right: 0; top: 132.5rem; text-align: center; font-size: 3.2rem; color: var(--amarillo); }
+</style>
+</head>
+<body>
+<div class="pieza">
+  <img class="logo" src="../../assets/solpet-logo.svg" alt="Solpet">
+  <h1 class="titular">Encuentra tu punto de venta más cercano</h1>
+  <div class="sangra panel">
+    <div class="halo" style="width:70rem;height:70rem;left:-25rem;top:20rem"></div>
+    <div class="halo" style="width:60rem;height:60rem;left:70rem;top:-10rem"></div>
+  </div>
+  <div class="sangra banda"></div>
+  <div class="qr">
+    <span class="qr__cta">Escanéame</span>
+    <img src="../../qr/qr-mapa-solpet.svg" alt="Código QR del mapa de puntos de venta">
+  </div>
+  <ol class="pasos">
+    <li><b>1</b><span>Escanea el código</span></li>
+    <li><b>2</b><span>Busca tu distrito o dilo por voz</span></li>
+    <li><b>3</b><span>Toca «Cómo llegar»</span></li>
+  </ol>
+  <p class="web">unrecord.github.io/SOLPET</p>
+</div>
+</body>
+</html>
