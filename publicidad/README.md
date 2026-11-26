@@ -1,6 +1,7 @@
 # Kit de publicidad del mapa de puntos de venta Solpet
 
-Todas las piezas llevan el QR que abre **https://unrecord.github.io/SOLPET/**.
+Todas las piezas llevan el QR que abre **https://unrecord.github.io/SOLPET/**. La dirección no va escrita en las
+piezas: se llega escaneando el QR.
 
 ## Piezas
 
@@ -51,4 +52,5 @@ python3 herramientas/generar-qr.py https://la-direccion-nueva/ qr-mapa-solpet
 node herramientas/generar-publicidad.js
 ```
 
-`fuente/app-celular.jpg` es una captura real del mapa (búsqueda «Cerca de Miraflores») que va dentro del celular.
+`fuente/app-celular.jpg` es una captura real del mapa (búsqueda «Cerca de Miraflores», con el botón de WhatsApp) que
+va dentro del celular. El marco del celular mide el 1,8 % de su ancho (`--cw` en cada pieza), como un teléfono actual.

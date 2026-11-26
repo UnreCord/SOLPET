@@ -40,16 +40,15 @@ img { display: block; }
   color: var(--verde); background: rgba(0, 122, 51, .1); border-radius: 999px;
 }
 
-/* celular con la captura real del mapa */
+/* celular con la captura real del mapa: marco fino, como un teléfono actual.
+   Cada pieza fija el ancho con --cw; el marco y las esquinas se calculan sobre ese ancho
+   (un padding en % se calcularía sobre el ancho de toda la pieza y saldría grueso). */
 .celular {
-  position: absolute; background: #121614; border-radius: 13% / 6.2%;
-  padding: 3.2%; box-shadow: 0 2.5rem 5rem rgba(0, 40, 15, .35);
+  position: absolute; width: var(--cw); background: #121614;
+  padding: calc(var(--cw) * .018); border-radius: calc(var(--cw) * .135);
+  box-shadow: 0 0 0 calc(var(--cw) * .004) rgba(255, 255, 255, .22), 0 2.5rem 5rem rgba(0, 40, 15, .35);
 }
-.celular::before { /* isla de la cámara */
-  content: ""; position: absolute; left: 50%; top: 2.1%; width: 30%; height: 2.6%;
-  transform: translateX(-50%); background: #121614; border-radius: 999px; z-index: 2;
-}
-.celular img { width: 100%; height: auto; border-radius: 10.5% / 4.9%; }
+.celular img { width: 100%; height: auto; border-radius: calc(var(--cw) * .118); }
 
 /* recuadro del QR */
 .qr { position: absolute; background: var(--blanco); border-radius: 7%; box-shadow: 0 1.5rem 4rem rgba(0, 40, 15, .25); }
@@ -72,4 +71,3 @@ img { display: block; }
 /* círculos concéntricos y pines decorativos (como en la imagen para compartir) */
 .halo { position: absolute; border-radius: 50%; background: rgba(255, 255, 255, .08); }
 .pin { position: absolute; height: auto; }
-.web { font-weight: 700; letter-spacing: .01em; }
