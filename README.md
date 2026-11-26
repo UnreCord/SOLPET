@@ -22,6 +22,12 @@ con el logo de Solpet y el verde `#007A33`. No menciona productos ni marcas: sol
 - `mapa/lugares.js`: los 50 distritos de Lima y Callao (y nombres de uso común como "Surco", "SJL" o "Cercado") para la
   búsqueda por lugar; otras zonas se buscan en OpenStreetMap.
 
+- **Contacto:** botón de WhatsApp abajo a la derecha (en el celular, en la fila de "Ver lista") que abre un chat con el
+  **+51 960 471 967** y este mensaje ya escrito: *"Hola, necesito saber cuáles son las tiendas más cercanas a
+  [Inserte ubicación referencial]."* Si la persona buscó un lugar o usó "Cerca de mí", el mensaje ya lleva ese lugar
+  (o un enlace a su ubicación). Al final de la lista también están "WhatsApp" y "Llamar al 960 471 967".
+  El número y el mensaje se cambian en `mapa/app.js` (`TELEFONO` y `mensajeWhatsApp`).
+
 ## Publicar en GitHub Pages
 
 1. En el repositorio: **Settings → Pages**.

@@ -46,6 +46,23 @@ body { overflow: hidden; overscroll-behavior: none; }
 body:not(.is-wide):not(.list-open).is-moving .bar__row,
 body:not(.is-wide):not(.list-open).is-moving .deck { opacity: .28; }
 
+/* ---------- botón de WhatsApp ----------
+   celular: a la derecha, en la fila de "Ver lista" (sube y baja con las tarjetas); PC: esquina inferior derecha */
+.wsp {
+  /* centrado con la fila de "Ver lista" (42 px de alto y 10 px de margen), arriba de las tarjetas */
+  position: fixed; z-index: 5; right: 14px; bottom: calc(var(--deck-h, 0px) - 48px);
+  width: 54px; height: 54px; display: grid; place-items: center; border-radius: 50%;
+  background: #25D366; color: var(--blanco);
+  box-shadow: 0 8px 22px rgba(0, 60, 25, .3);
+  transition: bottom .3s var(--ease), opacity .25s, transform .2s;
+}
+.wsp svg { width: 30px; height: 30px; }
+.wsp:hover { transform: scale(1.06); }
+.wsp:active { transform: scale(.96); }
+.wsp:focus-visible { outline: 3px solid var(--verde-900); outline-offset: 3px; }
+body.list-open:not(.is-wide) .wsp { opacity: 0; pointer-events: none; }
+body:not(.is-wide):not(.list-open).is-moving .wsp { opacity: .28; }
+
 /* ---------- tarjetas ---------- */
 .deck {
   position: fixed; z-index: 4; left: 0; right: 0; bottom: 0;
@@ -72,7 +89,8 @@ body:not(.is-wide):not(.list-open).is-moving .deck { opacity: .28; }
 body.deck-min .deck__min svg { transform: rotate(180deg); }
 body.deck-min .deck__track { display: none; }
 /* créditos del mapa (ⓘ): justo encima de las tarjetas, sin taparlas; se aclara junto con ellas al mover el mapa */
-body:not(.is-wide) .maplibregl-ctrl-bottom-right { bottom: var(--deck-h, 0px); transition: bottom .3s var(--ease), opacity .25s; }
+body:not(.is-wide) .maplibregl-ctrl-bottom-right { right: auto; left: 0; bottom: var(--deck-h, 0px); transition: bottom .3s var(--ease), opacity .25s; }
+body:not(.is-wide) .maplibregl-ctrl-bottom-right .maplibregl-ctrl-attrib.maplibregl-compact { margin: 0 0 10px 10px; }
 body:not(.is-wide).list-open .maplibregl-ctrl-bottom-right { bottom: 0; }
 body:not(.is-wide):not(.list-open).is-moving .maplibregl-ctrl-bottom-right { opacity: .28; }
 .deck__track { animation: deckIn .3s var(--ease); }
@@ -174,7 +192,8 @@ body.list-open .deck { transform: translateY(110%); }
   .bar__row { grid-template-columns: auto 1fr auto; grid-template-areas: "logo search near"; padding: 6px 8px; }
   .bar { right: auto; width: min(620px, calc(100vw - 20px)); }
   .bar__count { display: none; }
-  .deck__actions { position: absolute; right: 12px; bottom: calc(100% - 2px); margin: 0; }
+  .deck__actions { position: absolute; right: 80px; bottom: calc(100% - 2px); margin: 0; }
+  .wsp { width: 48px; height: 48px; bottom: calc(var(--deck-h, 0px) - 2px); }
   body.deck-min .deck__actions { bottom: calc(10px + var(--safe-b)); }
   .card { flex-basis: 320px; padding: 8px 10px; grid-template-columns: 44px minmax(0, 1fr); gap: 0 10px; border-radius: 16px; }
   .card .store__logo { width: 44px; height: 44px; border-radius: 10px; }
@@ -224,7 +243,9 @@ body.list-open .deck { transform: translateY(110%); }
   .sheet__list { grid-area: list; padding: 0 24px 16px; scrollbar-width: thin; scrollbar-color: #cfdad1 transparent; }
 
   /* mapa: los controles de zoom abajo a la derecha */
-  .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group { margin: 0 24px 34px 0; }
+  .maplibregl-ctrl-bottom-right { bottom: 88px; } /* zoom y créditos encima del botón de WhatsApp */
+  .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group { margin: 0 25px 12px 0; }
+  .wsp { right: 24px; bottom: 24px; width: 56px; height: 56px; }
 }
 
 /* PC con poca altura (laptop pequeña o zoom del navegador) */
