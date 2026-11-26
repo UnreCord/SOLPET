@@ -8,9 +8,20 @@
   <meta name="theme-color" content="#007A33">
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-  <meta property="og:title" content="Solpet | Puntos de venta">
-  <meta property="og:description" content="Encuentra las tiendas y veterinarias de Lima donde están los productos de Solpet.">
-  <meta property="og:image" content="assets/icono-512.png">
+  <link rel="canonical" href="https://unrecord.github.io/SOLPET/">
+  <link rel="manifest" href="manifest.webmanifest">
+  <!-- vista previa al compartir el enlace (WhatsApp, Facebook, etc.): las direcciones deben ser completas -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Solpet">
+  <meta property="og:locale" content="es_PE">
+  <meta property="og:url" content="https://unrecord.github.io/SOLPET/">
+  <meta property="og:title" content="Solpet | Encuentra tu punto de venta más cercano">
+  <meta property="og:description" content="Tiendas y veterinarias de Lima donde están los productos de Solpet. Busca por distrito, por voz o cerca de ti.">
+  <meta property="og:image" content="https://unrecord.github.io/SOLPET/assets/compartir.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Logo de Solpet y el texto: encuentra tu punto de venta más cercano">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://tiles.openfreemap.org" crossorigin>
@@ -25,8 +36,11 @@
   <script src="mapa/app.js" defer></script>
 </head>
 <body>
-  <h1 class="sr-only">Solpet: puntos de venta en Lima</h1>
-  <div class="map" id="map" role="region" aria-label="Mapa de puntos de venta en Lima"></div>
+  <main>
+    <h1 class="sr-only">Solpet: puntos de venta en Lima</h1>
+    <div class="map" id="map" role="region" aria-label="Mapa de puntos de venta en Lima"></div>
+  </main>
+  <noscript><p class="noscript">Para ver el mapa de puntos de venta, activa JavaScript en tu navegador.</p></noscript>
 
   <!-- barra superior: logo, buscador (con voz) y "cerca de mí" -->
   <header class="bar">

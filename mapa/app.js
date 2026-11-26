@@ -96,6 +96,11 @@
     }
   }
   updateControls();
+  // los créditos del mapa empiezan plegados (solo el ⓘ); se despliegan al tocarlo
+  if (view.map) view.map.once('load', () => {
+    const attrib = view.map.getContainer().querySelector('.maplibregl-ctrl-attrib');
+    if (attrib) attrib.classList.remove('maplibregl-compact-show');
+  });
 
   // encuadre inicial: se repite si la página se reacomoda al terminar de cargar (fuentes, tamaño de la ventana),
   // hasta que la persona mueva el mapa o elija una tienda
@@ -132,6 +137,7 @@
     meta.appendChild(S.el('span', 'card__district', s.district));
     if (s.km !== undefined) meta.appendChild(S.el('span', 'card__km', S.distanceText(s)));
     pick.append(meta, S.el('span', 'store__name', s.name), S.el('span', 'store__addr', s.addr));
+    pick.title = `${s.name} · ${s.addr}, ${s.district}`;
     const foot = S.el('div', 'card__foot');
     foot.appendChild(S.goLink(s, 'Cómo llegar', 'btn btn--verde card__go'));
     if (s.url) foot.appendChild(S.webLink(s));
@@ -474,6 +480,10 @@
     if (!wide.matches) document.documentElement.style.setProperty('--bar-h', `${bar.querySelector('.bar__row').getBoundingClientRect().bottom}px`);
   };
   if ('ResizeObserver' in window) new ResizeObserver(setBarH).observe(bar);
+  // alto de las tarjetas: los créditos del mapa (ⓘ) se ubican justo encima
+  const setDeckH = () => document.documentElement.style.setProperty('--deck-h', `${deckBox.offsetHeight}px`);
+  if ('ResizeObserver' in window) new ResizeObserver(setDeckH).observe(deckBox);
+  setDeckH();
   let resizeTimer;
   window.addEventListener('resize', () => {
     updateNav();

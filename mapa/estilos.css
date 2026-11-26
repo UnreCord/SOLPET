@@ -71,6 +71,10 @@ body:not(.is-wide):not(.list-open).is-moving .deck { opacity: .28; }
 .deck__min:hover { background: var(--bruma); }
 body.deck-min .deck__min svg { transform: rotate(180deg); }
 body.deck-min .deck__track { display: none; }
+/* créditos del mapa (ⓘ): justo encima de las tarjetas, sin taparlas; se aclara junto con ellas al mover el mapa */
+body:not(.is-wide) .maplibregl-ctrl-bottom-right { bottom: var(--deck-h, 0px); transition: bottom .3s var(--ease), opacity .25s; }
+body:not(.is-wide).list-open .maplibregl-ctrl-bottom-right { bottom: 0; }
+body:not(.is-wide):not(.list-open).is-moving .maplibregl-ctrl-bottom-right { opacity: .28; }
 .deck__track { animation: deckIn .3s var(--ease); }
 @keyframes deckIn { from { opacity: 0; transform: translateY(30px); } }
 
@@ -102,9 +106,10 @@ body.deck-min .deck__track { display: none; }
 .card__district { font-size: .72rem; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; color: var(--verde); overflow: hidden; text-overflow: ellipsis; }
 .card__km { flex: none; font-size: .74rem; font-weight: 700; color: var(--verde-900); }
 .card__km::before { content: "·"; margin-right: 6px; color: var(--verde); }
-/* nombre en una línea y dirección en máximo dos: así todas las tarjetas miden lo mismo */
+/* nombre y dirección en una línea cada uno: así todas las tarjetas miden lo mismo
+   (la dirección completa está en la lista, en la ficha y en Google Maps) */
 .card .store__name { font-size: 1.05rem; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.card .store__addr { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.card .store__addr { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .card__foot { grid-column: 2; align-self: end; display: flex; align-items: center; gap: 12px; flex-wrap: nowrap; margin-top: 8px; }
 .card__go { min-height: 38px; padding: 0 16px; font-size: .86rem; }
 .card__foot .store__web { min-height: 38px; }
@@ -192,10 +197,10 @@ body.list-open .deck { transform: translateY(110%); }
 
   .sheet {
     top: 24px; left: 24px; right: auto; bottom: 24px;
-    width: 430px;
+    width: 410px;
     display: grid; grid-template-columns: minmax(0, 1fr) auto;
     grid-template-rows: auto auto auto auto minmax(0, 1fr);
-    grid-template-areas: "logo logo" "title title" "search near" "count count" "list list";
+    grid-template-areas: "logo logo" "title near" "search search" "count count" "list list";
     column-gap: 10px;
     padding: 24px 0 0;
     border-radius: 22px;
@@ -207,10 +212,10 @@ body.list-open .deck { transform: translateY(110%); }
   .sheet .bar { position: static; pointer-events: auto; }
   .sheet__grip, .sheet__close { display: none; }
   .sheet .bar__logo { grid-area: logo; justify-self: start; height: 34px; margin: 0 0 16px 24px; }
-  .sheet__title { grid-area: title; margin: 0 24px; font-size: clamp(1.8rem, 2.4vw, 2.2rem); line-height: .95; }
-  .sheet .search { grid-area: search; margin: 18px 0 0 24px; }
-  .sheet .bar__near { grid-area: near; margin: 18px 24px 0 0; min-height: 46px; padding: 0 18px; font-size: .95rem; }
-  .sheet .bar__near svg { display: none; } /* como en la referencia: solo el texto, así el buscador tiene más espacio */
+  /* "Cerca de mí" junto al título y el buscador (con micrófono) a todo el ancho */
+  .sheet__title { grid-area: title; align-self: center; margin: 0 0 0 24px; font-size: clamp(1.75rem, 2.2vw, 2.1rem); line-height: .95; white-space: nowrap; }
+  .sheet .search { grid-area: search; margin: 16px 24px 0; }
+  .sheet .bar__near { grid-area: near; align-self: center; margin: 0 24px 0 0; min-height: 40px; padding: 0 14px; font-size: .88rem; }
   .sheet .bar__count {
     grid-area: count; display: block; margin: 12px 24px 4px; padding: 0;
     background: none; box-shadow: none; border-radius: 0;
@@ -220,15 +225,6 @@ body.list-open .deck { transform: translateY(110%); }
 
   /* mapa: los controles de zoom abajo a la derecha */
   .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group { margin: 0 24px 34px 0; }
-}
-
-/* PC con pantalla angosta (o zoom del navegador): "Cerca de mí" sube junto al título y el buscador ocupa todo el ancho */
-@media (min-width: 900px) and (max-width: 1399px) and (min-height: 560px) {
-  .sheet { width: 380px; grid-template-areas: "logo logo" "title near" "search search" "count count" "list list"; }
-  .sheet__title { align-self: center; margin-right: 0; font-size: 1.75rem; }
-  .sheet .bar__near { align-self: center; margin-top: 0; min-height: 40px; padding: 0 14px; font-size: .88rem; }
-  .sheet .bar__near svg { display: block; }
-  .sheet .search { margin-right: 24px; margin-top: 14px; }
 }
 
 /* PC con poca altura (laptop pequeña o zoom del navegador) */
