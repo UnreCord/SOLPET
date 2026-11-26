@@ -18,8 +18,10 @@
     return node;
   }
 
-  const directionsUrl = s =>
-    `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${s.name}, ${s.addr}, ${s.district}, Lima, Perú`)}`;
+  // "Cómo llegar": Google Maps en modo auto hacia las coordenadas exactas del local (las mismas del pin y de la
+  // distancia); sin coordenadas, hacia el nombre y la dirección
+  const directionsUrl = s => `https://www.google.com/maps/dir/?api=1&travelmode=driving&destination=${encodeURIComponent(
+    s.lat !== undefined ? `${s.lat},${s.lng}` : `${s.name}, ${s.addr}, ${s.district}, Lima, Perú`)}`;
 
   function distanceKm(a, b) {
     const rad = x => (x * Math.PI) / 180;

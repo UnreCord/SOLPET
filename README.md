@@ -36,8 +36,8 @@ el mapa base (openfreemap.org).
 ## Archivos
 
 - `index.html`: la página del mapa.
-- `mapa/tiendas.js`: **los puntos de venta**, tomados de la tabla `DIRECCIONES.xlsx` (nombre, logo, distrito,
-  dirección, coordenadas y web si tiene tienda online). Una fila sin dirección es una tienda solo online; con dirección
+- `mapa/tiendas.js`: **los puntos de venta**, tomados de la tabla `DIRECCIONES_COORDENADAS.xlsx` (nombre, logo,
+  distrito, dirección, coordenadas de Google Maps y web si tiene tienda online). Una fila sin dirección es una tienda solo online; con dirección
   pero sin coordenadas sale en la lista sin pin. La tabla trae también los productos de cada punto, pero el mapa no los muestra.
 - `mapa/mapa.js`, `mapa/app.js`: el mapa, los pines, la lista y las tarjetas. `mapa/base.css`, `mapa/estilos.css`: colores y diseño.
 - `assets/logos/`: logos de los clientes (cuadrados de 240 px en WebP). Para una tienda nueva, guardar su logo ahí y
@@ -46,6 +46,11 @@ el mapa base (openfreemap.org).
 - `propuesta-1/`, `propuesta-2/`: direcciones anteriores; solo redirigen al mapa, para que no se rompan enlaces o QR
   que ya se hayan compartido.
 - `qr/`: el QR (PNG para imprimir, SVG vectorial y una tarjeta lista para compartir).
+- `assets/compartir.png`: imagen que aparece al compartir el enlace en WhatsApp, Facebook, etc. (1200 × 630). Las
+  etiquetas `og:` de `index.html` usan la dirección completa del sitio: si el mapa se publica en otra dirección, hay
+  que cambiarla ahí (y en `canonical`).
+- `404.html`: si alguien abre una dirección que no existe dentro del sitio, lo lleva al mapa.
+- `manifest.webmanifest`: nombre e iconos para "Agregar a la pantalla de inicio" en el celular.
 
 ## QR
 
@@ -65,14 +70,5 @@ imprimir el QR, los impresos dejan de funcionar: conviene definirla antes de imp
 
 ## Pendiente
 
-- **Sin pin** (salen en la lista con "Cómo llegar"):
-  - Veterinaria San Felipe, Los Olivos ("Asentamiento San Martín"): no tiene número de puerta.
-  - Veterinaria Mundo Animal, Chorrillos ("Av. Alameda Los Horizontes Mza. A1 Lote 15 Urb. L..."): en la tabla la
-    urbanización está cortada y la avenida es larga; falta el nombre completo de la urbanización.
-  - Peluditos Pet Shop, "Av. Central 993, Lima": OpenStreetMap no encuentra una Av. Central en el Cercado de Lima; falta confirmar el distrito.
-- **Pin aproximado** (marcados `'calle'` en `tiendas.js`): OpenStreetMap no tiene esos números de puerta y el pin se
-  calculó sobre el trazo de la calle (100 números ≈ una cuadra), así que puede quedar a una o dos cuadras y la distancia
-  en auto puede diferir más de la de Google Maps: Pals & Tails, T&M (Magdalena y La Victoria) y Veterinaria Engreídos.
-  Para corregir uno, copiar las coordenadas del local en Google Maps (clic derecho sobre el local), pegarlas en su fila
-  y cambiar `'calle'` por `'google'`. Ya corregidos con Google Maps: Lumpet, The Urban Pets, American Vet (San Borja),
-  Peluditos (Pueblo Libre) y Naricitas (×2).
+- Los logos de Veterinaria Engreídos, +KOTAS, Veterinaria San Felipe y Pets Canadá son muy anchos (horizontales):
+  en el cuadrado de la tarjeta se ven pequeños. Con una versión cuadrada del logo de cada tienda se verían mejor.

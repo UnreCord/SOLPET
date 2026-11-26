@@ -136,6 +136,7 @@ button, input { font: inherit; color: inherit; }
 
 /* ---------- mapa ---------- */
 .map { background: var(--bruma); }
+.noscript { position: fixed; inset: 0; z-index: 9; display: grid; place-items: center; margin: 0; padding: 24px; background: var(--verde); color: var(--blanco); font-weight: 700; text-align: center; }
 .map__fallback { position: absolute; inset: 0; display: grid; place-items: center; color: var(--verde); padding: 24px; text-align: center; }
 .me-dot {
   width: 18px; height: 18px; border-radius: 50%;
