@@ -59,7 +59,8 @@
       // medidas sin animaciones (al cerrar la lista o minimizar, las tarjetas todavía se están moviendo)
       const top = bar.offsetTop + bar.querySelector('.bar__row').offsetHeight + 20;
       const bottom = listOpen ? 40 : deckBox.offsetHeight + 16;
-      p = { top, bottom, left: 30, right: 30 };
+      // a los lados queda aire para la etiqueta del lugar buscado ("Miraflores") y para los pines
+      p = { top, bottom, left: 56, right: 56 };
     }
     const fit = (a, b, total) => {
       const over = a + b + 180 - total;

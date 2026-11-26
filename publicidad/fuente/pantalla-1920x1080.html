@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="es" data-digital="1920x1080">
+<head>
+<meta charset="utf-8">
+<title>Pantalla 1920 × 1080 · Mapa de puntos de venta Solpet</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&display=block" rel="stylesheet">
+<link rel="stylesheet" href="comun.css">
+<style>
+  /* para un TV o monitor en el stand: el QR se escanea desde la pantalla */
+  .logo { position: absolute; left: 5rem; top: 5rem; width: 18rem; }
+  .titular { position: absolute; left: 5rem; top: 13rem; width: 42rem; font-size: 5.8rem; }
+  .sub { position: absolute; left: 5rem; top: 26.5rem; width: 38rem; font-size: 1.55rem; line-height: 1.35; }
+  .pasos { position: absolute; left: 5rem; top: 34rem; width: 40rem; gap: 1.4rem; }
+  .pasos li { gap: 1.3rem; }
+  .pasos b { width: 3rem; height: 3rem; font-size: 1.5rem; background: var(--verde); color: var(--blanco); }
+  .pasos span { font-size: 1.5rem; color: var(--verde-900); }
+  .panel { left: 50rem; right: 0; top: 0; bottom: 0; background: var(--verde); overflow: hidden; }
+  .banda { left: 0; right: 0; bottom: 0; height: 1rem; background: var(--amarillo); }
+  .celular { left: 53rem; top: 4.5rem; width: 20.5rem; }
+  .qr { left: 77rem; top: 9rem; width: 19.5rem; padding: 1.3rem; }
+  .qr__cta { top: -1.7rem; font-size: 1.6rem; padding: .6rem 1.8rem; }
+  .bajo-qr { position: absolute; left: 77rem; width: 19.5rem; top: 31rem; text-align: center; color: var(--blanco); font-size: 1.25rem; font-weight: 600; line-height: 1.35; }
+  .web { position: absolute; left: 77rem; width: 19.5rem; top: 36rem; text-align: center; font-size: 1.3rem; color: var(--amarillo); }
+</style>
+</head>
+<body>
+<div class="pieza">
+  <img class="logo" src="../../assets/solpet-logo.svg" alt="Solpet">
+  <h1 class="titular">Encuentra tu punto de venta más cercano</h1>
+  <p class="sub">Tiendas y veterinarias de Lima. Busca por distrito, por voz o cerca de ti.</p>
+  <ol class="pasos">
+    <li><b>1</b><span>Escanea el código con la cámara de tu celular</span></li>
+    <li><b>2</b><span>Busca tu distrito, dilo por voz o toca «Cerca de mí»</span></li>
+    <li><b>3</b><span>Toca «Cómo llegar» y ve con Google Maps</span></li>
+  </ol>
+  <div class="sangra panel">
+    <div class="halo" style="width:40rem;height:40rem;left:-4rem;top:12rem"></div>
+    <div class="halo" style="width:28rem;height:28rem;left:2rem;top:18rem"></div>
+    <img class="pin" src="../../assets/pin.svg" style="width:3.2rem;left:44rem;top:44rem;transform:rotate(8deg)">
+  </div>
+  <div class="sangra banda"></div>
+  <div class="celular"><img src="app-celular.jpg" alt=""></div>
+  <div class="qr">
+    <span class="qr__cta">Escanéame</span>
+    <img src="../../qr/qr-mapa-solpet.svg" alt="Código QR del mapa de puntos de venta">
+  </div>
+  <p class="bajo-qr">Apunta la cámara de tu celular a la pantalla</p>
+  <p class="web">unrecord.github.io/SOLPET</p>
+</div>
+</body>
+</html>

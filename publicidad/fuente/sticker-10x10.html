@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="es" data-impresion="100x100" data-vista="900">
+<head>
+<meta charset="utf-8">
+<title>Sticker 10 × 10 cm · Mapa de puntos de venta Solpet</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&display=block" rel="stylesheet">
+<link rel="stylesheet" href="comun.css">
+<style>
+  .fondo { left: calc(-1 * var(--b)); right: calc(-1 * var(--b)); top: calc(-1 * var(--b)); bottom: calc(-1 * var(--b)); background: var(--verde); overflow: hidden; }
+  .titular { position: absolute; left: 7rem; right: 7rem; top: 7rem; font-size: 8.4rem; text-align: center; color: var(--blanco); }
+  .titular em { font-style: normal; color: var(--amarillo); }
+  .qr { left: 50%; transform: translateX(-50%); top: 28rem; width: 54rem; padding: 3rem; box-shadow: none; }
+  .logo { position: absolute; left: 50%; transform: translateX(-50%); top: 86rem; width: 30rem; }
+</style>
+</head>
+<body>
+<div class="pieza">
+  <div class="sangra fondo">
+    <div class="halo" style="width:80rem;height:80rem;left:-30rem;top:40rem"></div>
+    <div class="halo" style="width:60rem;height:60rem;left:70rem;top:-20rem"></div>
+  </div>
+  <h1 class="titular">Escanea y encuentra <em>tu tienda más cercana</em></h1>
+  <div class="qr"><img src="../../qr/qr-mapa-solpet.svg" alt="Código QR del mapa de puntos de venta"></div>
+  <img class="logo" src="../../assets/solpet-logo-blanco.svg" alt="Solpet">
+</div>
+</body>
+</html>
